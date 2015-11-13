@@ -12,7 +12,7 @@ public class Neuron {
     
     private List<Neuron> axonTerminals;
     private double output;
-    private double errorSignal;
+    private double correctOutput;
     
     public Neuron(List<Neuron> inputs, List<Neuron> outputs) {
         this.dendrites = new HashMap<>();
@@ -68,6 +68,12 @@ public class Neuron {
         for(Neuron neuron : axonTerminals){
             neuron.pSP(this, output);
         }
+    }
+    
+    public void backpropogation{
+        /*
+            Use E = .5 (correctOutput - output)^2 to find weight changes and propogate input changes
+        */
     }
 
 }
