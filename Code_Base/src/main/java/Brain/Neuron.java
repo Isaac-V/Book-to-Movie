@@ -6,21 +6,25 @@ import java.utils.ArrayList;
 
 public class Neuron {
 
-    private Map<Neuron, double> dendrites;
+    private Map<Neuron, double> dendrites; //Associate input-neuron to weight
+    private Map currentPSPs<double, double>; //Store current iteration's inputs with their weights
+    private double pspSum;
+    
     private List<Neuron> axonTerminals;
-    private double inputSum;
     private double output;
+    private double errorSignal;
     
     public Neuron(List<Neuron> inputs, List<Neuron> outputs) {
         this.dendrites = new HashMap<>();
-        this.axonTerminals = new ArrayList<>();
-        inputSum = 0;
-        output = 0;
+        this.currentPSPs = new HashMap<>();
         if(inputs != null){
             for(Neuron neuron : inputs){
                 dendrites.put(neuron, 0);
             }
         }
+        inputSum = 0;
+        
+        this.axonTerminals = new ArrayList<>();
         if(outputs != null){
             for(Neuron neuron : outputs){
                 axonTerminals.add(neuron);
@@ -30,10 +34,10 @@ public class Neuron {
     
     public Neuron() {
         this.dendrites = new HashMap<>();
-        this.axonTerminals = new ArrayList<>();
+        this.currentPSPs = new HashMap<>();
         inputSum = 0;
-        output = 0;
-        threshold = 0;
+        
+        this.axonTerminals = new ArrayList<>();
     }
     
     public void addAxonTerminal(Neuron neuron){
@@ -48,19 +52,21 @@ public class Neuron {
         }
     }
     
-    public void postSynPotential(Neuron preSynNeu, double potential){
+    public void pSP(Neuron preSynNeu, double input){
         if(preSynNeu == null){
-            inputSum += potential;
+            pspSum += input;
         }
         else {
-            inputSum += potential * dendrites.get(preSynNeu);
+            double weight = dendrites.get(preSynNeu)
+            pspSum += input * weight;
+            currentInputs.put(input, weight);
         }
     }
     
     public void actionPotential(){
-        output = 1 / (1 + Math.pow(Math.E, (-1 * inputSum)));
+        output = 1 / (1 + Math.pow(Math.E, (-1 * pspSum)));
         for(Neuron neuron : axonTerminals){
-            neuron.postSynPotential(this, output);
+            neuron.pSP(this, output);
         }
     }
 
