@@ -1,0 +1,5 @@
+package inputEnums;
+
+public enum Subject {
+
+}
