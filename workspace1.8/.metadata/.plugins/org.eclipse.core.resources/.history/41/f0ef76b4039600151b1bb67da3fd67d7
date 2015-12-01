@@ -1,0 +1,33 @@
+package webScrapers;
+
+import inputOutputEnums.Input;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+
+
+public class AmazonBookScraper {
+	
+	private Map<Input, Boolean[]> neuralNetInputs;
+	
+	public AmazonBookScraper(){
+		this.neuralNetInputs = new HashMap<>();
+		this.neuralNetInputs.put(Input.BESTSELLER, new Boolean[Input.BESTSELLER.size()]);
+	};
+	
+	public 
+    public static void main(String[] args) throws Exception {
+
+        URL oracle = new URL("http://www.oracle.com/");
+        BufferedReader in = new BufferedReader(
+        new InputStreamReader(oracle.openStream()));
+
+        String inputLine;
+        while ((inputLine = in.readLine()) != null)
+            System.out.println(inputLine);
+        in.close();
+    }
+}

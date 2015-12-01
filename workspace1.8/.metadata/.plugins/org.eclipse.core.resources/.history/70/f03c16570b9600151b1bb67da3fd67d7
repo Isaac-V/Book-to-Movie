@@ -1,0 +1,88 @@
+package webScrapers;
+
+import inputOutputEnums.Input;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+
+
+public class AmazonBookScraper {
+	
+	private Map<Input, Boolean[]> aNNInputs;
+	
+	public AmazonBookScraper(){
+		this.aNNInputs = new HashMap<>();
+		this.aNNInputs.put(Input.BESTSELLER, new Boolean[Input.BESTSELLER.size()]);
+		this.aNNInputs.put(Input.RATING, new Boolean[Input.RATING.size()]);
+		this.aNNInputs.put(Input.REVIEWCOUNT, new Boolean[Input.REVIEWCOUNT.size()]);
+		this.aNNInputs.put(Input.AGEGROUP, new Boolean[Input.AGEGROUP.size()]);
+		this.aNNInputs.put(Input.THEMES, new Boolean[Input.THEMES.size()]);
+		this.aNNInputs.put(Input.TYPE, new Boolean[Input.TYPE.size()]);
+	};
+	
+	public Map<Input, Boolean[]> getANNInputs(){
+		return this.aNNInputs;
+	}
+	
+	public void setANNInputsFromTitle(String title){
+		
+		
+	}
+	
+	private URL amazonBookPage(String title){
+		URL amazonBook = null;
+		
+		
+		
+		return amazonBook;
+	}
+	
+	private URL amazonSearchPage(String title){
+		URL amazonSearchResults = null;
+		List<String> titleWords = breakUpTitleWords(title);
+		String amazonSearch = "http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords=";
+		for(String word : titleWords){
+			amazonSearch += word;
+		}
+		try{
+			amazonSearchResults = new URL(amazonSearch);
+		} catch(MalformedURLException e){
+			System.out.println(e.getMessage());
+		}
+		return amazonSearchResults;
+	}
+	
+	private List<String> breakUpTitleWords(String title){
+		List<String> words = new ArrayList<>();
+		StringTokenizer tokens = new StringTokenizer(title);
+		while(tokens.hasMoreTokens()){
+			String nextWord = tokens.nextToken();
+			if(tokens.hasMoreTokens()){
+				words.add(nextWord + "+");
+			}
+			else{
+				words.add(nextWord);
+			}
+		}
+		return words;
+	}
+	
+    public static void main(String[] args) throws Exception {
+
+        URL oracle = new URL("http://www.oracle.com/");
+        BufferedReader in = new BufferedReader(
+        new InputStreamReader(oracle.openStream()));
+
+        String inputLine;
+        while ((inputLine = in.readLine()) != null)
+            System.out.println(inputLine);
+        in.close();
+    }
+}
