@@ -17,7 +17,9 @@ def get_as_dict(movieID):
         dict.update({KEY_NAMES[i]: list[i]})
     #print dict
     return dict
-
+""" TODO: Generalize so that new connection won't be created for every.
+    E.g. make connection object in writeToCSV, or make open() and close() methods
+"""
 def get_as_list(movieID):
   
     # Connect via http

@@ -13,7 +13,7 @@ fieldsToAdd = getBoxOffice.KEY_NAMES
 
 """ Specify file names of input and output files (to easily change) """
 IN_FILE_NAME = 'SmallTestList.csv'
-OUT_FILE_NAME = 'some.csv'
+OUT_FILE_NAME = 'SmallOutputList.csv'
 
 
 """ Takes CSV files exported from IMDb list and modifies to only include desired columns.
@@ -34,10 +34,11 @@ def readWriteCSVasDict():
             # Define new row
             new_row = row
             
+            ##TODO: Filter out rows with incomplete data
             # Fill box office information
             updateBoxOffice(new_row)
             
-            # TODO: Add nominations column
+            ## TODO: Add nominations column
             
             # Write modified row to output file
             writer.writerow(new_row)
