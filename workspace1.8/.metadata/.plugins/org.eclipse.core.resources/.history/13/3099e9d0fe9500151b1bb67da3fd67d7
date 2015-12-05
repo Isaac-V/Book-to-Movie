@@ -1,6 +1,0 @@
-package inputEnums;
-
-public enum Subject {
-	AgeGroup,
-	Themes;
-}

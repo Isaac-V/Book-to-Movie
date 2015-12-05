@@ -1,7 +1,0 @@
-package inputEnums;
-
-public enum Popularity {
-	BestSeller,
-	Rating,
-	ReviewCount;
-}
