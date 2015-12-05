@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class BasicScraper {
 	
@@ -43,8 +44,8 @@ public class BasicScraper {
 		return page;
 	}
 	
-	public String sourceLineWithString(URL page, String key){
-		String targetLine = null;
+	public ArrayList<String> sourceLinesWithString(URL page, String key){
+		ArrayList<String> targetList = new ArrayList<String>();
 		
 		resetErrorMessage();
 		
@@ -54,23 +55,20 @@ public class BasicScraper {
 			String sourceLine = pageReader.readLine();
 			while(sourceLine != null){
 				if(sourceLine.contains(key)){
-					targetLine = sourceLine;
-					break;
+					targetList.add(sourceLine);
 				}
-				else{
-					sourceLine = pageReader.readLine();
-				}
+				sourceLine = pageReader.readLine();
 			}
 			
 		} catch (IOException e){
 			System.out.println(e.getMessage());
 		}
 		
-		if(targetLine == null){
+		if(targetList.isEmpty()){
 			this.errorMessage = "No Line in "+ page.getPath() + " with \"" + key + "\"";
 		}
 		
-		return targetLine;
+		return targetList;
 	}
 
 }
