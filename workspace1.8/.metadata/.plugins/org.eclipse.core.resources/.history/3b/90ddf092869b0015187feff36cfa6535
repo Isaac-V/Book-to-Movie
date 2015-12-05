@@ -71,7 +71,7 @@ public class BasicScraper {
 		return targetList;
 	}
 	
-	public ArrayList<String> getSourceLinesList(URL page){
+	public ArrayList<String> getSourceLinesList(URL page, String key){
 		ArrayList<String> lineArray = new ArrayList<>();
 		
 		resetErrorMessage();
