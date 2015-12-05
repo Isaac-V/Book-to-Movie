@@ -1,9 +1,13 @@
-import csv
-from imdb import IMDb
+from lxml import html
+import requests
 
-ia = IMDb('http')
-movie = ia.get_movie('0109830')
-movieXML = movie.asXML()
+page = requests.get('http://econpy.pythonanywhere.com/ex/001.html')
+tree = html.fromstring(page.content)
 
-print movieXML
-    
+#This will create a list of buyers:
+buyers = tree.xpath('//div[@title="buyer-name"]/text()')
+#This will create a list of prices
+prices = tree.xpath('//span[@class="item-price"]/text()')
+
+print 'Buyers: ', buyers
+print 'Prices: ', prices
