@@ -1,6 +1,10 @@
 package webScrapers;
 
 import inputOutputEnums.Input;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,28 +14,23 @@ import java.util.Map;
 
 public class AmazonBookScraper{
 	
-	
+	private Map<Input, Boolean[]> aNNInputs;
 	private BasicScraper scraper;
-	private URL currentPage;
-	private ArrayList<String> currentPageLines;
-	private Map<String, String> currentData;
-	private Map<Input, Boolean[]> currentANNInputs;
-	
 	
 	public AmazonBookScraper(){
 		this.scraper = new BasicScraper();
-		this.currentANNInputs = new HashMap<>();
-		this.currentANNInputs.put(Input.BESTSELLER, new Boolean[Input.BESTSELLER.size()]);
-		this.currentANNInputs.put(Input.RATING, new Boolean[Input.RATING.size()]);
-		this.currentANNInputs.put(Input.REVIEWCOUNT, new Boolean[Input.REVIEWCOUNT.size()]);
-		this.currentANNInputs.put(Input.AGEGROUP, new Boolean[Input.AGEGROUP.size()]);
-		this.currentANNInputs.put(Input.THEMES, new Boolean[Input.THEMES.size()]);
-		this.currentANNInputs.put(Input.TYPE, new Boolean[Input.TYPE.size()]);
+		this.aNNInputs = new HashMap<>();
+		this.aNNInputs.put(Input.BESTSELLER, new Boolean[Input.BESTSELLER.size()]);
+		this.aNNInputs.put(Input.RATING, new Boolean[Input.RATING.size()]);
+		this.aNNInputs.put(Input.REVIEWCOUNT, new Boolean[Input.REVIEWCOUNT.size()]);
+		this.aNNInputs.put(Input.AGEGROUP, new Boolean[Input.AGEGROUP.size()]);
+		this.aNNInputs.put(Input.THEMES, new Boolean[Input.THEMES.size()]);
+		this.aNNInputs.put(Input.TYPE, new Boolean[Input.TYPE.size()]);
 		System.out.println("Checkpoint 1");
 	};
 	
 	public Map<Input, Boolean[]> getANNInputs(){
-		return this.currentANNInputs;
+		return this.aNNInputs;
 	}
 	
 	public void setANNInputsFromTitle(String title){
@@ -42,7 +41,18 @@ public class AmazonBookScraper{
 			System.out.println("No Book Page");
 		}
 		
-
+		try{
+			System.out.println("Checkpoint 10");
+			BufferedReader pageReader = new BufferedReader(
+			        new InputStreamReader(bookPage.openStream()));
+			String sourceLine = pageReader.readLine();
+//			while(sourceLine != null){
+//				System.out.println(sourceLine);
+//				sourceLine = pageReader.readLine();
+//			}
+		} catch (IOException e){
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	private URL amazonBookPage(String title){

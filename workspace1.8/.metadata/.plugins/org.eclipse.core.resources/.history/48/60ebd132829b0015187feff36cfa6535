@@ -20,18 +20,18 @@ public class AmazonBookScraper{
 	
 	public AmazonBookScraper(){
 		this.scraper = new BasicScraper();
-		this.currentANNInputs = new HashMap<>();
-		this.currentANNInputs.put(Input.BESTSELLER, new Boolean[Input.BESTSELLER.size()]);
-		this.currentANNInputs.put(Input.RATING, new Boolean[Input.RATING.size()]);
-		this.currentANNInputs.put(Input.REVIEWCOUNT, new Boolean[Input.REVIEWCOUNT.size()]);
-		this.currentANNInputs.put(Input.AGEGROUP, new Boolean[Input.AGEGROUP.size()]);
-		this.currentANNInputs.put(Input.THEMES, new Boolean[Input.THEMES.size()]);
-		this.currentANNInputs.put(Input.TYPE, new Boolean[Input.TYPE.size()]);
+		this.aNNInputs = new HashMap<>();
+		this.aNNInputs.put(Input.BESTSELLER, new Boolean[Input.BESTSELLER.size()]);
+		this.aNNInputs.put(Input.RATING, new Boolean[Input.RATING.size()]);
+		this.aNNInputs.put(Input.REVIEWCOUNT, new Boolean[Input.REVIEWCOUNT.size()]);
+		this.aNNInputs.put(Input.AGEGROUP, new Boolean[Input.AGEGROUP.size()]);
+		this.aNNInputs.put(Input.THEMES, new Boolean[Input.THEMES.size()]);
+		this.aNNInputs.put(Input.TYPE, new Boolean[Input.TYPE.size()]);
 		System.out.println("Checkpoint 1");
 	};
 	
 	public Map<Input, Boolean[]> getANNInputs(){
-		return this.currentANNInputs;
+		return this.aNNInputs;
 	}
 	
 	public void setANNInputsFromTitle(String title){
