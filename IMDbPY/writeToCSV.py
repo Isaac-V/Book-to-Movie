@@ -91,6 +91,27 @@ def updateBoxOffice(row):
     return True
 
 """
+    Check if row contains values for all specified keys, and if all key-values are non-empty.
+    Return false if data is unavailable or incomplete. Return true if all key-value pairs are filled.
+"""
+def isComplete(row, fields):
+    for key in fields:
+        value = row.get(key)
+        if value == None or value == "":
+            return False
+    return True
+    
+### --------------------------------------------------------------
+
+### TODO: Create Binary Output file.
+
+### --------------------------------------------------------------
+
+###---------------------------------------------------------------
+### UNUSED CODE (KEPT FOR SAFETY)
+###---------------------------------------------------------------
+
+"""
     CURRENTLY NOT USED
     Read and write output file as a list rather than a dict object
 """    
@@ -122,23 +143,6 @@ def updateBoxOffice(row):
     inputFile.close()
     resultFile.close()
 """
-
-"""
-    Check if row contains values for all specified keys, and if all key-values are non-empty.
-    Return false if data is unavailable or incomplete. Return true if all key-value pairs are filled.
-"""
-def isComplete(row, fields):
-    for key in fields:
-        value = row.get(key)
-        if value == None or value == "":
-            return False
-    return True
-    
-### --------------------------------------------------------------
-
-### TODO: Create Binary Output file.
-
-### --------------------------------------------------------------
 
 if __name__ == "__main__":
     readWriteCSVasDict()
