@@ -4,25 +4,22 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 public class WikiScraper {
 	
 	private BasicScraper scraper;
 	private URL currentPage;
-	private ArrayList<String> currentPageLines;
-	private ArrayList<ArrayList<String>> currentTableEntries;
-	private Map<String, ArrayList<String>> currentData;
+	private ArrayList<String> pageLines;
+	private Map<Integer, String> tableRows;
+	private Map<Integer, String[]> tableColumns;
 
 	
 	public WikiScraper(){
 		this.scraper = new BasicScraper();
 		this.currentPage = null;
-		this.currentPageLines = null;
-		this.currentData = new HashMap<>();
-		this.currentTableEntries = new ArrayList<>();
-		currentTableEntries.add(new ArrayList<>());
-		currentTableEntries.add(new ArrayList<>());
+		this.pageLines = null;
+		this.tableRows = new HashMap<>();
+		this.tableColumns = new HashMap<>();
 		System.out.println("Checkpoint 1");
 	};
 	
@@ -30,7 +27,7 @@ public class WikiScraper {
 	public void setPageLines(String url){
 		this.currentPage = scraper.getPage(url);
 		if(this.currentPage != null){
-			this.currentPageLines = scraper.getSourceLinesList(this.currentPage);
+			this.pageLines = scraper.getSourceLinesList(this.currentPage);
 		}
 		System.out.println("Checkpoint 2");
 	}
@@ -41,55 +38,56 @@ public class WikiScraper {
 	}
 	
 	private void extractTableRows(){
-		if(this.currentPageLines == null){
+		if(this.pageLines == null){
 			System.out.println("No Lines");
 			return;
 		}
 		int count = 0;
-		for(int index = 0; index < 2251; index++){
-			if(currentPageLines.get(index).equals("<tr>")){
-				count++;
+		for(int index = 97; index < 2123; index++){ //Hard-code source lines to target table
+			if(pageLines.get(index).equals("<tr>")){
 				String row = "";
-				while(!currentPageLines.get(index).equals("</tr>")){
+				while(!pageLines.get(index).equals("</tr>")){
 					index++;
-					row += currentPageLines.get(index);
+					row += pageLines.get(index);
 				}
-				extractColumns(row);
+				this.tableRows.put(count, row);
+				this.tableColumns.put(count, new String[2]);
+//				extractColumns(row);
+				count++;
 			}
 		}
 		System.out.println(count);
-		this.currentTableEntries.get(0).remove(0);
-		this.currentTableEntries.get(1).remove(0);
-		System.out.println(this.currentTableEntries.get(0).get(0));
-		System.out.println(this.currentTableEntries.get(1).get(0));
-		System.out.println(this.currentTableEntries.get(0).get(322));
-		System.out.println(this.currentTableEntries.get(1).get(322));
-		System.out.println(this.currentTableEntries.get(0).size());
-		System.out.println(this.currentTableEntries.get(1).size());
+		extractColumns();
 	}
 	
-	private void extractColumns(String row){
-		String books = "";
-		String movies = "";
-		String breakPoint = "     ";
-		for(int i = 0; i<row.length(); i++){
-			char ch = row.charAt(i);
-			if(!breakPoint.equals("</td>")){
-				breakPoint = breakPoint.substring(1) + ch;
-				books += ch;
+	private void extractColumns(){
+		for(int h = 0; h < this.tableRows.keySet().size(); h++){
+			String row = this.tableRows.get(h);
+			String[] columns = this.tableColumns.get(h);
+			String books = "";
+			String movies = "";
+			String breakPoint = "     ";
+			for(int i = 0; i<row.length(); i++){
+				char ch = row.charAt(i);
+				if(!breakPoint.equals("</td>")){
+					breakPoint = breakPoint.substring(1) + ch;
+					books += ch;
+				}
+				else{
+					movies += ch;
+				}
 			}
-			else{
-				movies += ch;
-			}
+			columns[0] = books;
+			columns[1] = movies;
 		}
-		this.currentTableEntries.get(0).add(books);
-		this.currentTableEntries.get(1).add(movies);
 	}
 
 	private void displayQuoteStrings(){
-		for(int i = 0; i < this.currentTableEntries.get(0).size(); i++){
-			String currEntry0 = this.currentTableEntries.get(0).get(i);
+		for(int i = 0; i < this.tableColumns.keySet().size(); i++){
+			String[] currEntry = this.tableColumns.get(i);
+			String currEntry0 = currEntry[0];
 			String key0 = "  ";
+			String printString0 = ";";
 			int count = 0;
 			for(int j = 0; j < currEntry0.length(); j++){
 				key0 = key0.substring(1) + currEntry0.charAt(j);
@@ -101,14 +99,16 @@ public class WikiScraper {
 						j++;
 					}
 					if(count == 0){
-						System.out.print(quoteString + ";");
+						printString0 = quoteString + ";";
 					}
 					count++;
 				}
 			}
+			System.out.print(printString0);
 			
-			String currEntry1 = this.currentTableEntries.get(1).get(i);
+			String currEntry1 = currEntry[1];
 			String key1 = "  ";
+			String printString1 = "";
 			for(int j = 0; j < currEntry1.length(); j++){
 				key1 = key1.substring(1) + currEntry1.charAt(j);
 				if(key1.equals("\">")){
@@ -118,10 +118,10 @@ public class WikiScraper {
 						quoteString += currEntry1.charAt(j);
 						j++;
 					}
-					System.out.print(quoteString + ";");
+					printString1 += quoteString + ";";
 				}
 			}
-			System.out.println();
+			System.out.println(printString1 + ";");
 		}
 	}
 }
