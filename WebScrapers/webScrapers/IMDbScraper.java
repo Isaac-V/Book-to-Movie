@@ -1,4 +1,4 @@
-package webScrapers;
+//package webScrapers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -89,7 +89,7 @@ public class IMDbScraper extends BasicScraper {
 		// (Should theoretically only be one per page)
 		System.out.println(awardPage);
 		System.out.println("Getting key: " + "class=\"desc\"");
-		ArrayList<String> lineMatchList = this.sourceLinesWithString(awardPage, "<div class=\"desc\">");
+		ArrayList<String> lineMatchList = this.getSourceLinesWithString(awardPage, "<div class=\"desc\">");
 		
 		// Return empty string if no match found
 		if(lineMatchList.isEmpty()) {
@@ -118,6 +118,8 @@ public class IMDbScraper extends BasicScraper {
 	
 
 	public static void main(String[] args) {
+	
+		// TODO: Write to loop through csv file, preferably with movieID added
 		IMDbScraper scraper = new IMDbScraper();
 		String movieConst = "1754656";
 		URL moviePage = scraper.getAwardsPageById(movieConst);

@@ -1,6 +1,6 @@
 import csv, codecs, cStringIO
-from getBoxOffice import IMDbMovie
-import getBoxOffice
+from imdbInfo import IMDbMovie
+import imdbInfo
 import re # Regular Expression
 import imdb # IMDBpy package
 
@@ -16,7 +16,7 @@ FIELDS_TO_KEEP = ['const', 'Title', 'IMDb Rating', 'Year']
 """ FIELDS_TO_ADD specifies new table headers that will be added to the output file.
     These define new columns of data that will be filled.
 """
-FIELDS_TO_ADD = getBoxOffice.KEY_NAMES
+FIELDS_TO_ADD = imdbInfo.KEY_NAMES
 
 """ Specify file names of input and output files (to easily change) """
 IN_FILE_NAME = 'SmallTestList.csv'
@@ -30,6 +30,9 @@ imdbConnect = imdb.IMDb()
 ##  FUNCTIONS  ##
 ##-------------##
 
+"""
+    Establish a connection to IMDb
+"""
 def connectToIMDb():
     imdbConnect = imdb.IMDb()
 
@@ -37,7 +40,7 @@ def connectToIMDb():
     Removes unwanted columns (anything not in FIELDS_TO_KEEP). Adds and populates new
     columns as specified in FIELDS_TO_ADD.
 """
-def readWriteCSVasDict():
+def readWatchlist_writeCSVasDict():
     with open(IN_FILE_NAME, 'rb') as inputFile, open(OUT_FILE_NAME, 'wb') as resultFile:
         reader = csv.DictReader(inputFile)
         # Define writer. Headers specified by joined list of FIELDS_TO_KEEP and FIELDS_TO_ADD
@@ -82,8 +85,8 @@ def updateBoxOffice(row):
     movieObject = IMDbMovie(movieID, imdbConnect)
     
     # Retrieve box office info from IMDbPY API
-    #boxOffice = getBoxOffice.get_as_dict(movieID)
-    boxOffice = movieObject.get_as_dict()
+    #boxOffice = imdbInfo.getBoxOfficeAsDict(movieID)
+    boxOffice = movieObject.getBoxOfficeAsDict()
     print boxOffice
     
     # Update row and return true
@@ -129,12 +132,12 @@ def isComplete(row, fields):
                 header = row
                 
                 # Get desired columns
-                new_row.extend(getBoxOffice.KEY_NAMES)
+                new_row.extend(imdbInfo.KEY_NAMES)
             else:
                 new_row = row
                 movieID = re.sub('\D', '', new_row[header.index('const')])
                 print 'Movie ID is:', movieID
-                boxOffice = getBoxOffice.get_as_list(movieID)
+                boxOffice = imdbInfo.get_as_list(movieID)
                 new_row.extend(boxOffice)
                 writer.writerow(new_row)
                 rownum += 1
@@ -145,4 +148,4 @@ def isComplete(row, fields):
 """
 
 if __name__ == "__main__":
-    readWriteCSVasDict()
+    readWatchlist_writeCSVasDict()
