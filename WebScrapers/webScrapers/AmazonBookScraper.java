@@ -14,6 +14,7 @@ public class AmazonBookScraper{
 	private BasicScraper scraper;
 	private URL currentPage;
 	private ArrayList<String> currentPageLines;
+    private ArrayList<String> titles;
 	private Map<String, String> currentData;
 	private Map<Input, Boolean[]> currentANNInputs;
 	
@@ -44,18 +45,79 @@ public class AmazonBookScraper{
 		
 
 	}
+    
+    private ArrayList<String> parseKeywords(){
+        ArrayList<String> keywords = new ArrayList<><();
+        
+        return keywords;
+    }
+    
+    private int parseAgeGroup(){
+        int ageGroup = 0;
+        
+        return ageGroup;
+    }
+    
+    private int parseReviewCount(){
+        int reviewCount = 0;
+        
+        return reviewCount;
+    }
+    
+    
+    private double parseReview(){
+        double review = 3.0;
+        
+        return review;
+    }
+    
+    private int parseBestSeller(){
+        int bestSeller = 0;
+        
+        return bestSeller;
+    }
+    
+    public void setTitlesFromCSV(String indexFilePath){
+        
+        ArrayList<String> titles = new ArrayList<>();
+        
+        try{
+			BufferedReader pageReader = new BufferedReader(new FileReader(indexFilePath));
+
+            String indexLine = pageReader.readLine();
+            while(indexLine != null){
+                int title = "";
+                for(int i = 0; stringIndex < i.length(); i++){
+                    char c = indexLine.charAt(i);
+                    if(i == ';'){
+                        break;
+                    }
+                    else{
+                        title += c;
+                    }
+                }
+                titles.add(title);
+            }
+            pageReader.close();
+			
+		} catch (IOException e){
+			System.out.println(e.getMessage());
+		}
+        
+        this.titles = titles;
+    }
 	
-	private URL amazonBookPage(String title){
+	private void setAmazonBookPageLines(String title){
 		URL bookPage = null;
 		System.out.println("Checkpoint 3");
 		String bookURL = getURLfromSearch(title);
 		
 		if(bookURL != null){
 			bookPage = scraper.getPage(bookURL);
+            this.currentPageLines = scraper.getSourceLinesList(bookPage);
 		}
 
 		System.out.println("Checkpoint 9");
-		return bookPage;
 	}
 	
 	private String getURLfromSearch(String title){
