@@ -35,12 +35,14 @@ public class BasicScraper {
 		} catch(MalformedURLException e){
 			System.out.println(e.getMessage());
 		}
+	
 		
 		if(page == null){
 			this.errorMessage = "Failed to Resolve Page";
 			System.out.println(errorMessage);
 		}
 		
+		System.out.println(page.toString());
 		return page;
 	}
 	
@@ -102,23 +104,24 @@ public class BasicScraper {
 		resetErrorMessage();
 		
 		int lineNumber = 0;
-		
-		try{
-			BufferedReader pageReader = new BufferedReader(
-			        new InputStreamReader(page.openStream()));
-			String sourceLine = pageReader.readLine();
-			while(sourceLine != null){
-				if(sourceLine.contains(key)){
-					lineNumberList.add(lineNumber);
+		if(page != null){
+			try{
+				BufferedReader pageReader = new BufferedReader(
+				        new InputStreamReader(page.openStream()));
+				String sourceLine = pageReader.readLine();
+				while(sourceLine != null){
+					if(sourceLine.contains(key)){
+						lineNumberList.add(lineNumber);
+					}
+					lineNumber ++;
+					sourceLine = pageReader.readLine();
 				}
-				lineNumber ++;
-				sourceLine = pageReader.readLine();
+				
+			} catch (IOException e){
+				System.out.println(e.getMessage());
 			}
-			
-		} catch (IOException e){
-			System.out.println(e.getMessage());
 		}
-		
+
 		if(lineNumberList.isEmpty()){
 			this.errorMessage = "No Line in "+ page.getPath() + " with \"" + key + "\"";
 		}
