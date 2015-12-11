@@ -4,9 +4,13 @@
 ##-- IMPORTS --##
 ##-------------##
 
+import time # For scheduling tasks without overloading system
 import imdb # IMDBpy package
 import re # Regular Expression
 import csv, codecs, cStringIO # For working with CSV files
+from operator import itemgetter
+import string
+#from imdb.parser.http import movieParser
 
 ##-----------------##
 ##-- GLOBAL VARS --##
@@ -19,14 +23,21 @@ KEY_NAMES = ['Gross Revenue', 'Budget', 'Net Profit']
 RES_NUM_FORMAT = '(?P<amount>([1-9][0-9,]+))' # Numbers with punctuation
 RES_CURRENCY = '\$' # Defines accepted currency
 RES_COUNTRY = '\((?P<country>([wW]orldwide|(Non-)?USA))\)' # Defines accepted countries
+RES_YEAR = '\([1-2]([0-9]{3})\)' # Specifies a year
 
-RES_YEAR = '\([1][0-9]{3}\)'
+# Timer
+"""
+LAST_REQ_INTERV_START = time.time()
+LAST_REQ_TIME = time.time() # Marks start time of thread
+NUM_REQUESTS = 1 # Marks number of requests so far
+"""
 
 # Names of acceptable kinds
 ## TODO: List preferred types?
-OK_KINDS = ['movie', 'tv series', 'tv movie', 'tv mini series', 'short', 'tv short']
+OK_KINDS = ['movie', 'tv', 'tv series', 'tv movie', 'tv mini series', 'short', 'tv short']
 
-imdbConnect = None
+ia = imdb.IMDb()
+
 
 ##--------------------------------------------------------------------------------------
 
@@ -34,7 +45,7 @@ imdbConnect = None
 ##-- IMDbMovie Class: Specifies individual movie with imdb connection --##
 ##----------------------------------------------------------------------##
 
-## TODO: Globalize functions (rather than put inside class)?
+## TODO: Globalize functions (rather than put inside class)? -- currently inefficient!
 # For individual movies
 class IMDbMovie:
     """
@@ -45,25 +56,83 @@ class IMDbMovie:
         
         try:
             self.ia = connection or imdb.IMDb()
+            #makeRequest()
+            startTime = time.time()
             self.movie = self.ia.get_movie(self.movieID)
+            if time.time() - startTime < 0.2:
+                print "Sleep for safety..."
+                sleepOneFifth()
+            
+            self.title = self.movie.get('title')
             print 'Got movie:', self.movie.get('title')
         except:
             print "Sorry, lost internet!"
             raise
-            
+    
+    ##-----------------------------
+    
+    """ RETURN THIS MOVIE IN DICTIONARY FORM """
+    def convertToDict(self, encode):
+        # Declare dictionary to store keys
+        movieDict = {}
+        
+        # Add title, encoding if specified
+        if encode is True:
+            movieDict.update({'Movie': self.getTitle().encode('utf-8')})
+        else:
+            movieDict.update({'Movie': self.getTitle()})
+        
+        # Get basic information
+
+        movieDict.update({'IMDb ID': "tt" + self.getID()}) # leading t's added for ease of url use
+        rating = self.getRating() or 0
+        movieDict.update({'IMDb Rating': rating})
+        
+        # Update box office information
+        movieDict.update(self.getBoxOfficeAsDict())
+        
+        # Return
+        return movieDict
+    
     """
         Returns true if value is empty
     """
     def is_not_available(self, value):
         # N/A represented as empty string
-        return value == ''
+        return value == '' or value == None
         
+    def getTitle(self):
+        return self.title
+        
+    def getID(self):
+        return str(self.movieID)
+    
+    """
+        Returns the movie's rating
+    """
+    def getRating(self):
+        movie = self.movie
+        if movie.get('rating') != None:
+            return movie.get('rating')
+        
+        #makeRequest()
+        startTime = time.time()
+        self.ia.update(movie)
+        return movie.get('rating') or 0 # Assumes no rating means that movie not well received
+        if time.time() - startTime < 0.2:
+            print "Sleep for safety..."
+            sleepOneFifth()
+    
+    ## ------------------ ##
+    ## --- BOX OFFICE --- ##
+    ## ------------------ ##
+    
     """
         Return box office information as a dictionary
     """
     def getBoxOfficeAsDict(self):
         # Get values in list form
-        list = self.get_as_list()
+        list = self.getBoxOfficeAsList()
         
         # Create dictionary with KEY_NAMES as keys and values at corresponding indices are values.
         # Assumes returned list gives box office info in same order as KEY_NAMES list
@@ -76,17 +145,22 @@ class IMDbMovie:
     """
         Return box office information as a list
     """
-    def get_as_list(self):
+    def getBoxOfficeAsList(self):
         # Get current movie
         movie = self.movie
         
         # Grab list of business information from IMDb
+        #makeRequest()
+        startTime = time.time()
         self.ia.update(movie, 'business') # get the business information
         business = movie.get('business') or {} # may be empty
+        if time.time() - startTime < 0.2:
+            print "Sleep for safety..."
+            sleepOneFifth()
         
         # If no business information, return list of empty elements
         if bool(business) is False:
-            print 'Box office info N/A'
+            print 'BOX OFFICE INFO N/A'
             return ['','','']
         
         # Get gross revenue
@@ -169,7 +243,7 @@ class IMDbMovie:
     """
     def __get_budget_int(self, business):
         # Grab budget
-        budget_list = business.get('budget')
+        budget_list = business.get('budget') or {}
         
         #If no budget information returned, replace with empty string
         if bool(budget_list) is False:
@@ -178,6 +252,10 @@ class IMDbMovie:
         
         # Grab first (and presumably only) item in budget
         match = re.match(r'' + RES_CURRENCY + RES_NUM_FORMAT, budget_list[0])
+        
+        if match == None:
+            print "BUDGET INFO N/A"
+            return ''
         
         # Convert to int and return
         return self.__convert_money_to_int(match)
@@ -198,9 +276,84 @@ class IMDbMovie:
 
 ##---------------------------------------------------------------------
 
+##--------------------------------------------------------------------##
+##-- GLOBAL FUNCTIONS: Methods that do not require IMDbMovie object --##
+##--------------------------------------------------------------------##
+
+##---------------------------------------------------------------------
+
+##------------------------##
+## CONNECTING AND SYNCING ##
+##------------------------##
+
+"""
+    Establish a connection to IMDb
+"""
+def connectToIMDb():
+    ia = imdb.IMDb()
+
+"""
+    Put thread to sleep for 0.2 seconds.
+    NOTE: Put this after any seemingly-frequent web requests. Use the following form:
+        startTime = time.time()
+        # make some ia request (ia.update, ia.get, etc.)
+        if time.time() - startTime < 0.2:
+            print "Sleep for safety..."
+            sleepOneFifth()
+    If the request took less than 0.2 seconds, then multiple requests of the same type in a row
+    could lead to overloading the server (only allowed 5 web service calls per second, so 5 equal-length
+    requests in a row must have at least 0.2 seconds between them)
+"""
+def sleepOneFifth():
+    # Sleep for one fifth of a second
+    time.sleep(0.2)
+    
+"""
+    Make a request
+"""
+def makeRequest():
+    #NUM_REQUESTS = NUM_REQUESTS + 1
+    
+    # If less than 0.2 sec since last request, in danger of overloading
+    if LAST_REQ_TIME - time.time() < 0.2:
+        print "Sleep for safety..."
+        sleepOneFifth()
+    LAST_REQ_TIME = time.time()
+
+##---------------------------------------------------------------------
+
+##------------------------##
+## CRITERIA FOR SEARCHING ##
+##------------------------##
+
+"""
+    Returns true if movie is an acceptable type (e.g. a TV episode or video game)
+"""
+def acceptableKind(movie):
+    # Check what kind of movie this is
+    kind = movie['kind']
+    
+    ##print "KIND:", kind
+    
+    # Return true only if kind is within set of acceptable film formats
+    if kind in OK_KINDS:
+        return True
+        
+    # Return false otherwise
+    return False
+
 ##----------------------##
-##-- GLOBAL FUNCTIONS --##
-##----------------------##
+## SEARCHING FOR TITLES ##
+##----------------------##   
+
+""" Get a movie ID """
+def getMovieID(movie):
+    startTime = time.time()
+    movieID = ia.get_imdbID(movie)
+    if time.time() - startTime < 0.2:
+        print "Sleeping for safety...."
+        sleepOneFifth()
+    return movieID
 
 """
     Search titles by search term. Return a movie whose title matches exactly, or an empty string if no match.
@@ -209,8 +362,14 @@ class IMDbMovie:
     This method also takes into account titles with ampersands ('&') in place of 'and'.
 """
 def getExactMatch(searchTerm):
+    # Search for term
     print "Searching for: ", searchTerm
-    searchResults = imdbConnect.search_movie(searchTerm)
+    #makeRequest()
+    startTime = time.time()
+    searchResults = ia.search_movie(searchTerm)
+    if time.time() - startTime < 0.2:
+        print "Sleep for safety..."
+        sleepOneFifth()
     
     # Number of results
     print "Number of results:", len(searchResults)
@@ -222,12 +381,10 @@ def getExactMatch(searchTerm):
         if acceptableKind(item) is True:
             if isExactMatch(item, searchTerm):
                 return item
-            else: # No alternative titles exist for this movie
-                print "No alternate titles for this movie; try again"
             print "\n"
         
     # No matching results; return empty string
-    print "Out of luck; looks like that film isn't in IMDb"
+    print "Out of luck; looks like \"" + searchTerm + "\" isn't in IMDb"
     return None
 
 
@@ -237,7 +394,10 @@ def getExactMatch(searchTerm):
 def isExactMatch(movie, searchTerm):
     # Grab title
     movieTitle = movie['title']
-    print "TITLE", movieTitle
+    if isinstance(movieTitle, str):
+        print "TITLE:", movieTitle
+    if isinstance(movieTitle, unicode):
+        print "TITLE", movieTitle.encode('utf-8')
     
     ## TODO: Better handle year
     ## Suggestions: Check if it exists. Separate methods for each (year and non-year)?
@@ -247,16 +407,26 @@ def isExactMatch(movie, searchTerm):
     print "YEAR:", movieYear
     
     # If search term has year at the end, match exact year
-    if hasYearAtEnd(searchTerm):
+    if hasYearAtEnd(searchTerm) and (movieYear != ""):
         titleToMatch = movieTitle + " (" + str(movieYear) + ")"
     else: # Match by title only
         titleToMatch = movieTitle
     
-    # Check if matches name or name with year
+    # Check if matches title of movie
     print "Match against:", titleToMatch
     if titlesMatch(titleToMatch, searchTerm):
         print "Found match:", movie.summary()
         return True
+        
+    # If that doesn't work, try searching with year appended
+    """if movieYear != "":
+        titleWithYear = titleToMatch + " (" + str(movieYear) + ")"
+        print "Match against", titleWithYear
+        print isinstance(titleWithYear, str)
+        print isinstance(searchTerm, str)
+        if titlesMatch(titleWithYear, searchTerm):
+            print "Found match:", movie.summary()
+            return True"""
     
     # If doesn't match exactly, check alternative titles
     
@@ -264,21 +434,28 @@ def isExactMatch(movie, searchTerm):
     ##-- (Nature of imdb search results)
     ##--- Can use update, but problems with unicode parsing
     # Get list of alternative titles
-    #imdbConnect.update(movie)
+    #ia.update(movie)
+    #makeRequest()
+    startTime = time.time()
     altTitleList = movie.get('akas') or [] # May be None
+    if time.time() - startTime < 0.2:
+        print "Sleep for safety..."
+        sleepOneFifth()
     
-    print altTitleList
     print "Alt titles?", altTitleList != []
+    if altTitleList != []:
+        print altTitleList
+    
     # Compare all alternate titles to search term
     for alt in altTitleList:
-        print "ALT TITLE:", alt
+        print "ALT TITLE:", alt.encode('utf-8')
         #If search term has year at the end, match exact year
-        if hasYearAtEnd(searchTerm):
+        if hasYearAtEnd(searchTerm) and movieYear != "":
             altToMatch = alt + " (" + str(movieYear) + ")"
         else: # Match by title only
             altToMatch = alt
         
-        print "Match against:", altToMatch
+        ##print "Match against:", altToMatch
         # Check if matches title, or title + year
         if titlesMatch(altToMatch, searchTerm):
             # This movie's alternative title matches the search term.
@@ -343,26 +520,19 @@ def isExactMatch(movie, searchTerm):
 """
     Gets closest title match from search result, rather than returning empty string
 """
-def getClosestMatch(searchTerm):
+def getClosestMatch(searchTerm, firstIfNone):
+    
+    # Attempt to match search term exactly
     exactMatch = getExactMatch(searchTerm)
     # If found an exact match, return it
     if exactMatch != None:
         return exactMatch
     
     # If couldn't find exact match, it could be that the year is slightly off
-    if hasYearAtEnd(searchTerm) is False:
-        # Year was already excluded; no need to search same term again
-        
-        # Simply repeat search and grab first item, or empty string
-        searchResults = imdbConnect.search_movie(searchTerm)
-        if len(searchResults) > 0:
-            return searchResults[0]
-        else:
-            return None
-    else:
+    if hasYearAtEnd(searchTerm) is True: # Year was included in search
         # Remove year from search term
         searchSansYear = stripYearAtEnd(searchTerm)
-        print "Try searching without year:", searchSansYear
+        print "Try searching without year:", searchSansYear + "\n"
         
         # Search without year
         exactMatch = getExactMatch(searchSansYear)
@@ -371,32 +541,54 @@ def getClosestMatch(searchTerm):
         if exactMatch != None:
             print "Found a match by title only"
             return exactMatch
-        
-        # Return first search result
-        # Simply repeat search and grab first item, or empty string
-        searchResults = imdbConnect.search_movie(searchTerm)
+        else:
+            print "No exact match for title"
+    
+    # If still no match, return first search result if allowed. Otherwise return None
+    if firstIfNone is True:
+        print "\nCouldn't find exact match; just grab first result"
+         # Simply repeat search and grab first item, or empty string
+        searchResults = ia.search_movie(searchTerm)
         if len(searchResults) > 0:
             return searchResults[0]
         else:
             print "Sorry, can't find any IMDb results whatsoever"
             return None
+    else:
+        return None
         
-
+##------------------------------------##
+## STRING COMPARISON AND MANIPULATION ##
+##------------------------------------##
+        
 """
     Returns true if two titles match. Takes into account possibility
-    that one of titles may have '&' in place of 'and'
+    that one of titles may have '&' in place of 'and', as well as mismatch in case
 """        
 def titlesMatch(title1, title2):
-    if title1 == title2:
+    ## TODO: test sans punctuation?
+    print title1
+    print title2
+    
+    if isinstance(title1, str) is False:
+        print "NOTE: ONE OF THESE ISN'T A STRING: title1 =", title1
+    if isinstance(title2, str) is False:
+        print "NOTE: ONE OF THESE ISN'T A STRING: title1 =", title2
+    
+    # Make lower case
+    title1Lower = title1.lower()
+    title2Lower = title2.lower()
+    
+    if title1Lower == title2Lower:
         return True
         
     # If one of titles has ampersands,
     # check non-ampersand versions of titles
-    if " & " in title1:
-        if title1.replace('&', 'and') == title2:
+    if " & " in title1Lower:
+        if title1Lower.replace('&', 'and') == title2Lower:
             return True
-    if " & " in title2:
-        if title2.replace('&', 'and') == title1:
+    if " & " in title2Lower:
+        if title2Lower('&', 'and') == title1Lower:
             return True
             
     return False
@@ -405,37 +597,74 @@ def titlesMatch(title1, title2):
     Returns true if year is on at the end of string
 """
 def hasYearAtEnd(string):
-    return re.search(r'\s' + RES_YEAR + '(?=$)', string) != None
+    #searchPattern = re.compile('\s' + RES_YEAR + '$')
+    #return re.search(searchPattern, string) is True
+    return re.search(r'\s+' + RES_YEAR + "$", string) != None
 
 """
     Removes parenthetical year at end of search term
 """    
 def stripYearAtEnd(searchTerm):
     # Searches to see if year is appended to end of string
-    match = re.search(r'\s' + RES_YEAR + '(?=$)', searchTerm)
+    searchPattern = re.compile('\s+' + RES_YEAR + "$")
+    match = re.search(searchPattern, searchTerm)
     
     # Remove year if present, or return original string
     if match != None:
         return searchTerm[:match.start()] + searchTerm[match.end():]
     else:
         return searchTerm
+        
+##------------------------------------------------------------------
+
+##--------------------------------------------##
+##-- DEALING WITH MOVIES IN DATA STRUCTURES --##
+##--------------------------------------------##
+    
+##-------------##
+##-- RATINGS --##
+##-------------##
 
 """
-    Returns true if movie is an acceptable type (e.g. a TV episode or video game)
+    Takes list of movies and returns the one with the highest rating
 """
-def acceptableKind(movie):
-    # Check what kind of movie this is
-    kind = movie['kind']
+def getHighestRated(list):
     
-    print "KIND:", kind
+    startTime = time.time()
     
-    # Return true only if kind is within set of acceptable film formats
-    if kind in OK_KINDS:
-        return True
+    mostPopularMovie = None;
+    highestRating = -1.0
+    
+    ## FREQUENT REQUESTS -- SLEEP EVERY SO OFTEN
+    # Search list for highest rated
+    for movie in list:
+        # Grab movie's rating
+        ##print "Analyzing movie", movie, "...."
         
-    # Return false otherwise
-    return False
-    
+        # Grab full movie
+        #makeRequest()
+        startTime = time.time()
+        movie = ia.get_movie(ia.get_imdbID(movie))
+        if time.time() - startTime < 0.2:
+            print "Sleep for safety..."
+            sleepOneFifth()
+        
+        rating = movie.get('rating') or '0'
+        #movieObj = IMDbMovie(ia.get_imdbID(movie), ia)
+        #rating = movieObj.getRating() or '0'
+        
+        # Convert to float for comparison
+        rating = float(rating)
+        ##print "Has rating of", str(rating)
+        
+        # If rating higher than current highest,
+        # mark movie as current highest rated
+        if rating > highestRating:
+            mostPopularMovie = movie
+            highestRating = rating
+            
+    return mostPopularMovie
+
 ##------------------------------------------------------------------
 
 ##-------------------------------------##
@@ -446,11 +675,27 @@ def acceptableKind(movie):
     main for running program independently
 """
 if __name__ == "__main__":
+    
+    ## SOME TESTING CODE -- Can get literature list! (Use in program?)
+    
     """try:
-        imdbConnect = imdb.IMDb()
-        movieObject = IMDbMovie('0070047', imdbConnect)
-        movieObject.getBoxOfficeAsDict()
-    except IOError as details:
-        print 'Sorry, lost connection to HTTP', details"""
-    imdbConnect = imdb.IMDb()
-    getClosestMatch('Hopelessly Lost (1973)')
+        movie = ia.get_movie('0000000') or None
+    except:
+        print "Couldn't find id"""
+    """ia.update(movie, 'literature')
+    lit = movie.get('literature') or ""
+    print lit
+    source = lit.get('original literary source') or ""
+    print source"""
+    
+    demons = IMDbMovie('0480249', ia)
+    dict = demons.convertToDict(False)
+    print demons.getBoxOfficeAsDict()
+    print dict
+    
+    stringInfo = ""
+    stringInfo += dict['Movie'] + ";"
+    stringInfo += dict['IMDb ID'] + ";" + str(dict['IMDb Rating']) + ";"
+    stringInfo += str(dict['Gross Revenue']) + ";" + str(dict['Budget']) + ";" + str(dict['Net Profit'])
+    print stringInfo
+    
