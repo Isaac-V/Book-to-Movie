@@ -98,35 +98,5 @@ public class BasicScraper {
 		return lineArray;
 	}
 	
-	public ArrayList<Integer> getLineNumbersWithString(URL page, String key){
-		ArrayList<Integer> lineNumberList = new ArrayList<>();
-		
-		resetErrorMessage();
-		
-		int lineNumber = 0;
-		if(page != null){
-			try{
-				BufferedReader pageReader = new BufferedReader(
-				        new InputStreamReader(page.openStream()));
-				String sourceLine = pageReader.readLine();
-				while(sourceLine != null){
-					if(sourceLine.contains(key)){
-						lineNumberList.add(lineNumber);
-					}
-					lineNumber ++;
-					sourceLine = pageReader.readLine();
-				}
-				
-			} catch (IOException e){
-				System.out.println(e.getMessage());
-			}
-		}
-
-		if(lineNumberList.isEmpty()){
-			this.errorMessage = "No Line in "+ page.getPath() + " with \"" + key + "\"";
-		}
-		
-		return lineNumberList;
-	}
 
 }

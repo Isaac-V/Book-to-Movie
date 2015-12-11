@@ -64,8 +64,31 @@ public class AmazonBookScraper{
 	
 	public void setANNInputsFromTitle(String title){
 		System.out.println("Checkpoint 2");
-		
-
+	}
+	
+	public void filterBookData(){
+		ArrayList<String> dataStore = new ArrayList<>();
+		try{
+			BufferedReader pageReader = new BufferedReader(new FileReader(
+					"C:\\Users\\Isaac\\Desktop\\BookData.csv"));
+			String sourceLine = pageReader.readLine();
+			while(sourceLine != null){
+				dataStore.add(sourceLine);
+				sourceLine = pageReader.readLine();
+			}
+			pageReader.close();
+			
+			FileWriter writer = new FileWriter(
+					"C:\\Users\\Isaac\\Desktop\\BookDataFiltered.csv", true);
+			for(int i = 0; i<dataStore.size(); i++){
+				if(!dataStore.get(i).contains(";0;0.0;0;")){
+					writer.write(dataStore.get(i) + "\n");
+				}
+			}
+			writer.close();
+		} catch (IOException e){
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	public void getTitleData(){
@@ -263,8 +286,7 @@ public class AmazonBookScraper{
         	return bestSeller;
         }
         
-        if(!this.scraper.getLineNumbersWithString(
-        		this.currentPage, "'rank-number'>1").isEmpty()){
+        if(!getSourceLineNumsWithString( "'rank-number'>1").isEmpty()){
         	bestSeller = 1;
         }
         return bestSeller;
