@@ -2,6 +2,7 @@ package webScrapers;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,8 +27,8 @@ public class AmazonBookScraper{
 	
 	public AmazonBookScraper(){
 		this.scraper = new BasicScraper();
-		this.titleData = new TreeMap();
-		this.keyWords = new ArrayList();
+		this.titleData = new TreeMap<>();
+		this.keyWords = new ArrayList<>();
 		this.keyWords.add("sci-fi");
 		this.keyWords.add("crime");
 		this.keyWords.add("classic");
@@ -44,7 +45,7 @@ public class AmazonBookScraper{
 		this.keyWords.add("vampire");
 		this.keyWords.add("histor");
 		this.keyWords.add("myth");
-		this.keyWords.add("royal");
+		this.keyWords.add("western");
 		this.keyWords.add("space");
 		this.keyWords.add("animal");
 		this.keyWords.add("voyage");
@@ -68,10 +69,14 @@ public class AmazonBookScraper{
 	}
 	
 	public void getTitleData(){
-		int count = 1;
-		long lastTime = System.currentTimeMillis();
-		for(String title : titles){
+
+		for(int titleIndex = 0; titleIndex < this.titles.size(); titleIndex++){
+			String title = this.titles.get(titleIndex);
+//				sleepMe();
 			setAmazonBookPageSource(title);
+			if(this.currentPageLines != null){
+				System.out.println(this.currentPageLines.size());
+			}
 			String dataString = "";
 			dataString += parseBestSeller() + ";";
 			dataString += parseRating() + ";";
@@ -80,46 +85,60 @@ public class AmazonBookScraper{
 			for(String keyword : parseKeywords()){
 				dataString += keyword + ";";
 			}
+			
 			this.titleData.put(title, dataString);
-			count++;
-			if(count % 5 == 0){
-				if(System.currentTimeMillis() - lastTime < 1000){
-					try{
-						Thread.sleep(1000);
-					} catch(InterruptedException e) {
-					    System.out.println(e.getMessage());
-					}
-				}
-				lastTime = System.currentTimeMillis();
+			
+			try{
+				FileWriter writer = new FileWriter(
+						"C:\\Users\\Isaac\\Desktop\\BookData.csv", true);
+				String output = title + ";" + dataString + "\n";
+//				if(this.currentPage != null){
+//					writer.write(this.currentPage.toString() + "\n");
+//				}
+				writer.write(output);
+				System.out.print(output);
+				writer.close();
+			} catch (IOException e){
+				System.out.println(e.getMessage());
 			}
+			
+			
 		}
-		for(String title : this.titleData.keySet()){
-			System.out.println(title + ";" + this.titleData.get(title));
-		}
+			
+			
+			for(String title : this.titleData.keySet()){
+				System.out.println(title + ";" + this.titleData.get(title));
+			}
+			
+		
 	}
     
     private ArrayList<String> parseKeywords(){
         ArrayList<String> keywords = new ArrayList<>();
+        if(this.currentPage == null || this.currentPageLines == null){
+        	return keywords;
+        }
         
         Map<String, Boolean> keyWordMap = new TreeMap<>();
         for(String s : this.keyWords){
         	keyWordMap.put(s, false);
         }
         
-        ArrayList<Integer> targetDescLines = this.scraper.getLineNumbersWithString(
-        		this.currentPage, "bookDesc_override_CSS");
+        ArrayList<Integer> targetDescLines = getSourceLineNumsWithString("bookDesc_override_CSS");
         
-        ArrayList<String> targetSubjectLines = this.scraper.getSourceLinesWithString(
-        		this.currentPage, "zg_hrsr");
+        ArrayList<String> targetSubjectLines = getSourceLinesWithString("zg_hrsr");
         
-        for(int i = targetDescLines.get(0)+18; i < targetDescLines.get(0)+23; i++){
-        	String descLine = this.currentPageLines.get(i).toLowerCase();
-        	for(String k : this.keyWords){
-        		if(descLine.contains(k)){
-        			keyWordMap.put(k, true);
-        		}
-        	}
+        if(!targetDescLines.isEmpty()){
+        	for(int i = targetDescLines.get(0) + 18; i < targetDescLines.get(0) + 23; i++){
+        		String descLine = this.currentPageLines.get(i).toLowerCase();
+            	for(String k : this.keyWords){
+            		if(descLine.contains(k)){
+            			keyWordMap.put(k, true);
+            		}
+            	}
+            }
         }
+        
         for(String s : targetSubjectLines){
         	String subjLine = s.toLowerCase();
         	for(String k : this.keyWords){
@@ -138,11 +157,14 @@ public class AmazonBookScraper{
     }
     
     private String parseAgeGroup(){
+    	if(this.currentPage == null){
+        	return "adult";
+        }
+    	
     	boolean teen = false;
     	boolean child = false;
 
-        ArrayList<String> targetLines = this.scraper.getSourceLinesWithString(
-        		this.currentPage, "zg_hrsr");
+        ArrayList<String> targetLines = getSourceLinesWithString("zg_hrsr");
         
         for(String s : targetLines){
         	if(s.contains("Teens")){
@@ -164,8 +186,11 @@ public class AmazonBookScraper{
     
     private int parseReviewCount(){
         int reviewCount = 0;
-        ArrayList<String> targetLines = this.scraper.getSourceLinesWithString(
-        		this.currentPage, "reviewCountTextLinkedHistogram");
+        if(this.currentPage == null){
+        	return reviewCount;
+        }
+        
+        ArrayList<String> targetLines = getSourceLinesWithString("acrCustomerReviewText");
         
         if(!targetLines.isEmpty()){
         	String rcLine = targetLines.get(0);
@@ -184,6 +209,7 @@ public class AmazonBookScraper{
         			toggle = true;
         		}
         	}
+
         	reviewCount = Integer.parseInt(rcStr.replace(",", ""));
         }
         
@@ -193,21 +219,39 @@ public class AmazonBookScraper{
     
     private double parseRating(){
         double rating = 0.0;
-        ArrayList<String> targetLines = this.scraper.getSourceLinesWithString(
-        		this.currentPage, "reviewCountTextLinkedHistogram");
+        if(this.currentPage == null){
+        	return rating;
+        }
+        
+        ArrayList<String> targetLines = getSourceLinesWithString("reviewCountTextLinkedHistogram");
         
         if(!targetLines.isEmpty()){
         	String ratingLine = targetLines.get(0);
-        	String ratingStr = "   ";
+        	String preStr = "       ";
+        	String ratingStr = "";
+        	boolean toggle = false;
         	for(int i = 0; i < ratingLine.length(); i++){
-        		if(ratingStr.charAt(1) == '.'){
-        			rating = Double.parseDouble(ratingStr);
-        			break;
+        		if(preStr.equals("title=\"")){
+        			toggle = true;
         		}
         		else{
-        			ratingStr = ratingStr.substring(1) + ratingLine.charAt(i);
+        			preStr = preStr.substring(1) + ratingLine.charAt(i);
+        		}
+        		
+        		if(toggle){
+        			if(ratingLine.charAt(i) == ' '){
+        				break;
+        			}
+        			else{
+        				ratingStr += ratingLine.charAt(i);
+        			}
         		}
         	}
+        	
+        	if(ratingStr.length() > 0){
+        		rating = Double.parseDouble(ratingStr);
+        	}
+        	
         }
         
         return rating;
@@ -215,6 +259,10 @@ public class AmazonBookScraper{
     
     private int parseBestSeller(){
         int bestSeller = 0;
+        if(this.currentPage == null){
+        	return bestSeller;
+        }
+        
         if(!this.scraper.getLineNumbersWithString(
         		this.currentPage, "'rank-number'>1").isEmpty()){
         	bestSeller = 1;
@@ -254,17 +302,37 @@ public class AmazonBookScraper{
     }
 	
 	private void setAmazonBookPageSource(String title){
-		URL bookPage = null;
-		System.out.println("Checkpoint 3");
+		
 		String bookURL = getURLfromSearch(title);
 		
-		System.out.println("Amazon Book Page Loading...");
+//		System.out.println("Amazon Book Page Loading...");
 		if(bookURL != null){
-			bookPage = this.scraper.getPage(bookURL);
-			this.currentPage = bookPage;
-            this.currentPageLines = scraper.getSourceLinesList(bookPage);
+			setBookPageData(bookURL);
+		}
+		else{
+			this.currentPage = null;
+			this.currentPageLines = null;
 		}
 		
+	}
+	
+	private void setBookPageData(String url){
+		URL bookPage = this.scraper.getPage(url);
+		ArrayList<String> pageLines = null;
+		
+		if(bookPage != null){
+			pageLines = this.scraper.getSourceLinesList(bookPage);
+			while(pageLines.size() == 0){
+				sleepMe();
+				pageLines = this.scraper.getSourceLinesList(bookPage);
+			}
+			this.currentPage = bookPage;
+			this.currentPageLines = pageLines;
+		}
+		else{
+//			sleepMe();
+			setBookPageData(url);
+		}
 	}
 	
 	private String getURLfromSearch(String title){
@@ -272,11 +340,19 @@ public class AmazonBookScraper{
 		URL searchPage = amazonSearchPage(title);
 		String keyPhrase = "a-row s-result-list-parent-container";
 		
-		System.out.println("Finding First Search Result...");
+//		System.out.println("Finding First Search Result...");
 		ArrayList<String> sourceLines = this.scraper.getSourceLinesWithString(
 				searchPage, keyPhrase);
 		
-		if(!sourceLines.isEmpty()){
+		int counter = 0;
+		while(sourceLines.size() == 0 && counter < 10){
+			sleepMe();
+			sourceLines = this.scraper.getSourceLinesWithString(
+					searchPage, keyPhrase);
+			counter++;
+		}
+		
+		if(sourceLines.size() > 0){
 			bookURL = getURLfromSearchHelper(sourceLines.get(0));
 		}
 		
@@ -297,21 +373,58 @@ public class AmazonBookScraper{
 				break;
 			}
 		}
-		System.out.println("bookURL = " + bookURL);
+//		System.out.println("bookURL = " + bookURL);
 		return bookURL;
 	}
 
 	private URL amazonSearchPage(String title){
 		URL searchPage = null;
 		String titleWords = title.replace(' ', '+');
-		System.out.println("Amazon Search...");
+//		System.out.println("Amazon Search...");
 		String amazonSearch = "http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords=";
 		amazonSearch += titleWords;
-		System.out.println("amazonSearch = " + amazonSearch);
+//		System.out.println("amazonSearch = " + amazonSearch);
 
 		searchPage = this.scraper.getPage(amazonSearch);
 		
 		return searchPage;
+	}
+	
+	private void sleepMe(){
+		try{
+			Thread.sleep(1000);
+		} catch(InterruptedException e) {
+		    System.out.println(e.getMessage());
+		}
+	}
+	
+	private ArrayList<Integer> getSourceLineNumsWithString(String s){
+		ArrayList<Integer> lineNums = new ArrayList<>();
+		
+		if(this.currentPageLines != null){
+			for(int i = 0; i < this.currentPageLines.size(); i++){
+				if(this.currentPageLines.get(i).contains(s)){
+					lineNums.add(i);
+				}
+			}
+		}
+		
+		return lineNums;
+	}
+	
+	private ArrayList<String> getSourceLinesWithString(String s){
+		ArrayList<String> lines = new ArrayList<>();
+		
+		if(this.currentPageLines != null){
+			for(int i = 0; i < this.currentPageLines.size(); i++){
+				String currS = this.currentPageLines.get(i);
+				if(currS.contains(s)){
+					lines.add(currS);
+				}
+			}
+		}
+		
+		return lines;
 	}
 	
 }
