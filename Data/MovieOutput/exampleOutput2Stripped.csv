@@ -709,7 +709,7 @@ Grand Canary;Grand Canary;tt0025196;7.3;;;
 The Grapes of Wrath;The Grapes of Wrath;tt0032551;8.1;;800000;
 The Great Bank Robbery;The Great Bank Robbery;tt0064391;5.5;;;
 The Great Dinosaur Robbery;One of Our Dinosaurs Is Missing;tt0075016;6.0;;;
-Great Expectations;Great Expectations;tt1836808;6.4;258656;;
+Great Expectations;Great Expectations;tt0119223;6.8;55494066;25000000;30494066
 The Great Gatsby;The Great Gatsby;tt1343092;7.3;351040419;105000000;246040419
 The Great Man (Al Morgan);The Great Man;tt0049280;7.1;;;
 The Great Santini;The Great Santini;tt0079239;7.2;4702575;;
@@ -728,7 +728,7 @@ The Group (Mary McCarthy);The Group;tt0060479;6.6;;;
 Gruesome School;De griezelbus;tt0436370;5.4;;;
 La Guerre des boutons;War of the Buttons;tt0111666;7.5;12712;;
 The Guilty Head;Die Fälscher;tt0813547;7.6;5483549;;
-Gulliver's Travels;Novyy Gulliver;tt0026793;6.8;;;
+Gulliver's Travels;Gulliver's Travels;tt1320261;4.9;237382724;112000000;125382724
 The Guns of Navarone;The Guns of Navarone;tt0054953;7.6;28900000;6000000;22900000
 Guns of the Timberland;Guns of the Timberland;tt0053884;5.6;;;
 The Gypsy Moths (James William Drought);The Gypsy Moths;tt0064397;6.4;;;
@@ -840,7 +840,7 @@ Ivanhoe;Ivanhoe;tt0044760;6.9;24729920;3842000;20887920
 Jack in the Box (William Kotzwinkle);Book of Love;tt0099166;6.0;1382259;;
 Jack's Return Home;Hit Man;tt0068704;5.7;;;
 James and the Giant Peach;James and the Giant Peach;tt0116683;6.7;28934758;38000000;-9065242
-Jane Eyre;Shanti Nilayam;tt0390476;7.8;;;
+Jane Eyre;Jane Eyre;tt1229822;7.4;34710627;;
 Norah Lofts;Jassy;tt0039509;6.4;;;
 Jaws;Jaws;tt0073195;8.1;470653000;8000000;462653000
 Jean le Bleu;La femme du boulanger;tt0030127;7.6;;;
@@ -853,7 +853,7 @@ Josepha;Josepha;tt0084176;6.0;;;
 Journal d'un curé de campagne;Journal d'un curé de campagne;tt0042619;8.0;;;
 A Journey to Matecumbe;Treasure of Matecumbe;tt0075347;6.3;;;
 Journey to Shiloh;Journey to Shiloh;tt0063161;5.7;;;
-Journey to the West;Da nao tian gong;tt0059855;8.2;;;
+Journey to the West;The Forbidden Kingdom;tt0865556;6.6;127980002;55000000;72980002
 The Joy Luck Club;The Joy Luck Club;tt0107282;7.6;32861136;11000000;21861136
 Jude the Obscure;Jude the Obscure;tt0066674;7.6;;;
 The Juggler (Donald E. Westlake);Made in U.S.A;tt0060647;6.5;81105;50000;31105
@@ -984,7 +984,7 @@ The Manchurian Candidate;The Manchurian Candidate;tt0368008;6.6;65948711;8000000
 Manon des Sources;Manon des sources;tt0091480;8.0;3940542;;
 Marnie;Marnie;tt0058329;7.2;7000000;3000000;4000000
 Mary Poppins;Mary Poppins;tt0058331;7.8;115272727;6000000;109272727
-MASH: A Novel About Three Army Doctors;M*A*S*H;tt0068098;8.4;;;
+MASH: A Novel About Three Army Doctors;M*A*S*H;tt0066026;7.6;81600000;3500000;78100000
 Marathon Man;Marathon Man;tt0074860;7.5;21709020;;
 Matilda (Roald Dahl);Matilda;tt0117008;6.8;33084249;36000000;-2915751
 Maurice (E. M. Forster);Maurice;tt0093512;7.8;3130592;2600000;530592
@@ -1007,7 +1007,7 @@ The Girl Who Played with Fire (Millennium series) (Stieg Larsson);The Girl Who P
 The Girl Who Kicked the Hornets' Nest (Millennium series) (Stieg Larsson);The Girl Who Kicked the Hornet's Nest;tt1343097;7.3;5186974;;
 Mine-Haha, or On the Bodily Education of Young Girls;Innocence;tt0251141;7.4;2194919;;
 The Mirror Crack'd from Side to Side;Shubho Mahurat;tt0368969;7.2;;;
-Les Miserables;Les misérables;tt0025509;8.0;;;
+Les Miserables;Les Miserables;tt1707386;7.6;441809770;61000000;380809770
 Misery (Stephen King);Misery;tt0100157;7.8;61276872;20000000;41276872
 Miss Lonelyhearts;Lonelyhearts;tt0053017;6.7;;;
 Moby-Dick;Moby Dick;tt0452823;6.6;;1175000;
@@ -1180,7 +1180,7 @@ The Power and the Glory;The Fugitive;tt0039402;6.5;;;
 The Power of One;The Power of One;tt0105159;7.2;2827107;;
 Pozegnania;Pozegnania;tt0052083;7.2;;;
 Presumed Innocent;Presumed Innocent;tt0100404;6.9;221300000;;
-Pride and Prejudice;Pride and Prejudice;tt0112130;9.1;;;
+Pride and Prejudice;Pride & Prejudice;tt0414387;7.8;121147947;28000000;93147947
 The Prince and the Pauper;Princ a chudas;tt0344231;8.3;;;
 The Prince of Tides;The Prince of Tides;tt0102713;6.6;74787599;30000000;44787599
 The Princess Bride;The Princess Bride;tt0093779;8.1;30857814;16000000;14857814
@@ -1588,12 +1588,12 @@ The Witches (Roald Dahl);The Witches;tt0100944;6.8;10360553;;
 The Witches of Eastwick;The Witches of Eastwick;tt0094332;6.5;63766510;22000000;41766510
 Witchfinder General;Witchfinder General;tt0063285;6.9;;175000;
 Witch's Milk;Pete 'n' Tillie;tt0069080;6.0;;;
-Dinner with a Perfect Stranger;The Perfect Gift;tt1349640;7.1;;;
+Dinner with a Perfect Stranger;The Perfect Stranger;tt0466923;6.9;;100000;
 The Witnesses (Anne Holden);The Bedroom Window;tt0092627;6.4;12640385;;
 Woe to Live On;Ride with the Devil;tt1124309;5.6;;;
 The Wolfen;Wolfen;tt0083336;6.3;10626725;17000000;-6373275
 The Woman Chaser (Charles Willeford);The Woman Chaser;tt0217894;7.2;110720;1200000;-1089280
-The Woman in Black (Susan Hill);The Woman in Black;tt0098672;7.4;;;
+The Woman in Black (Susan Hill);The Woman in Black;tt1596365;6.4;127730736;17000000;110730736
 The Woman in White (Wilkie Collins);The Woman in White;tt0137279;7.2;;;
 Woman, Thou Art Loosed!: Healings the Wounds of the Past;Woman Thou Art Loosed;tt0399901;6.8;6879730;;
 Woman Wanted (Joanna McClelland Glass);Woman Wanted;tt0158369;5.6;;;

@@ -688,9 +688,10 @@ if __name__ == "__main__":
     source = lit.get('original literary source') or ""
     print source"""
     
-    demons = IMDbMovie('0480249', ia)
+    demons = IMDbMovie('0414387', ia)
+    #print demons.getBoxOfficeAsList()
     dict = demons.convertToDict(False)
-    print demons.getBoxOfficeAsDict()
+    #print demons.getBoxOfficeAsDict()
     print dict
     
     stringInfo = ""

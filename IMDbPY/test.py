@@ -10,6 +10,7 @@ for item in tm:
   if item.get('kind') != None:
     print "KIND:", item['kind']
   print ""
+  print "ID:", ia.get_imdbID(item)
   #ia.update(item, 'akas')
   """try:
     alternateTitles = item['akas']

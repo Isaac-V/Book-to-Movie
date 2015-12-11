@@ -102,9 +102,29 @@ def descendSortByKey(dictList, key):
     return newList
 
 ##----------------------------------------------------------------------
+
 ##------------##
 ## READ/WRITE ##
 ##------------##    
+
+def filterIncomplete(inFile, outFile):
+    with open(inFile, 'rb') as inputFile, open(outFile, 'wb') as resultFile:
+        # Read input file, delimiting by semicolns
+        reader = csv.DictReader(inputFile, delimiter=';', fieldnames=HEADERS)
+        
+        # Define writer with desired headers
+        writer = csv.DictWriter(resultFile, delimiter=";", fieldnames=HEADERS, extrasaction="ignore")
+        
+        #writer.writeheader()
+        
+        
+        for row in reader: # Row given in form of a list of strings
+            print row
+            if isComplete(row, HEADERS) is True:
+                writer.writerow(row)
+        
+        inputFile.close()
+        resultFile.close()
 
 """
     Read raw book-to-movie index file, write to new output CSV
@@ -413,6 +433,7 @@ def isMoreComplete(dict1, dict2, fields):
 """
 
 if __name__ == "__main__":
-    readBTMIndex_writeOutput("../Data/BookToMovieIndexProofread.csv", "exampleOutput2B.csv", "incomplete2B.csv")
+    filterIncomplete("../Data/MovieOutput/exampleOutput2Stripped.csv", "exOutFilter.csv")
+    #readBTMIndex_writeOutput("../Data/BookToMovieIndexProofread.csv", "exampleOutput2B.csv", "incomplete2B.csv")
     #readWatchlist_writeCSVasDict()
     # Testing some code
