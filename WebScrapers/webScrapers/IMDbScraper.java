@@ -31,7 +31,7 @@ public class IMDbScraper extends BasicScraper {
 	// Constructor
 	public IMDbScraper() {
 		super();
-		System.out.println("Created IMDB scraper");
+		System.out.println("Created IMDB scraper\n");
 	}
 	
 	/* Public Methods */
@@ -39,11 +39,16 @@ public class IMDbScraper extends BasicScraper {
 	
 	public int getNumAwardsForMovie(String idConst) {
 	
-		System.out.println("In getMe method!!!!!!");
+		if(!isValidId(idConst)) {
+			System.out.println("CAUTION: " + idConst + " is not a valid id! Better fix that...");
+			idConst = fixId(idConst);
+			System.out.println("Id is now " + idConst);
+		}
 		
-		String movieAwardUrl = IMDB_URL_BASE + TITLE_URL + idConst + "/" + AWARDS_QUERY;
+		String movieAwardUrl = buildStringUrl(idConst);
 		
 		setAwardsPageData(movieAwardUrl);
+		//sleepMe(1);
 		
 		/*System.out.println("currentPage: " + currentPage);
 		
@@ -110,9 +115,9 @@ public class IMDbScraper extends BasicScraper {
 	
 	/* Private Helpers */
 	
-	private void sleepMe(){
+	private void sleepMe(int seconds){
 		try{
-			Thread.sleep(1000);
+			Thread.sleep(seconds * 1000);
 		} catch(InterruptedException e) {
 		    System.out.println(e.getMessage());
 		}
@@ -126,9 +131,10 @@ public class IMDbScraper extends BasicScraper {
 		ArrayList<String> pageLines = null;
 		
 		if(awardsPage != null){
+			sleepMe(1);
 			pageLines = this.getSourceLinesList(awardsPage);
 			while(pageLines.size() == 0){
-				sleepMe();
+				sleepMe(1);
 				pageLines = this.getSourceLinesList(awardsPage);
 			}
 			this.currentPage = awardsPage;
@@ -151,8 +157,7 @@ public class IMDbScraper extends BasicScraper {
 		
 		int awardCount = 0;
 		while(match.find()) {
-			System.out.println("Found");
-			System.out.println(match.group(0));
+			System.out.println("Found " + match.group(0));
 			awardCount += Integer.parseInt(match.group(0));
 		}
 		return awardCount;
@@ -225,7 +230,7 @@ public class IMDbScraper extends BasicScraper {
 		System.out.println("Writing to file...");
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(inputCsv));
-			BufferedWriter writer = new BufferedWriter(new FileWriter(outputCsv));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(outputCsv, true));
 			String currLine = "";
 			String[] currCols;
 			int idIndex = 2;
@@ -248,11 +253,14 @@ public class IMDbScraper extends BasicScraper {
 					// Grab constant
 					String idConst = currCols[idIndex];
 					
-					// Grab number of awards
+					// Grab id constant
 					String currID = currCols[idIndex];
+					
+					// Grab number of awards
 					System.out.println("This movie's ID is " + currID);
 					int awards = this.getNumAwardsForMovie(currCols[idIndex]);
 					
+					// Add column to row
 					String toAdd = "" + awards;
 					currLine += ";" + toAdd;
 				}
@@ -275,6 +283,32 @@ public class IMDbScraper extends BasicScraper {
 		
 	}
 	
+	private boolean isValidId(String idConst) {
+		if(idConst.length() != 9) {
+			return false;
+		}
+		return true;
+	}
+	
+	private String fixId(String idConst) {
+		String pattern = "(\\d+)";
+		Pattern rePattern = Pattern.compile(pattern);
+		Matcher match = rePattern.matcher(idConst);
+		
+		if(match.find()) {
+			String numbers = match.group(0);
+			int numPaddingZeros = 7 - numbers.length();
+			String newString = "tt";
+			for(int i = 0; i < numPaddingZeros; i++) {
+				newString += "0";
+			}
+			newString += numbers;
+			return newString;
+		} else {
+			return "";
+		}
+	}
+	
 	public int indexOf(String[] array, String element) {
 		for(int i = 0; i < array.length; i++) {
 			if(array[i].equals(element)) {
@@ -289,15 +323,15 @@ public class IMDbScraper extends BasicScraper {
 	
 		// TODO: Write to loop through csv file, preferably with movieID added
 		/*IMDbScraper scraper = new IMDbScraper();
-		String movieConst = "tt1707386";
+		String movieConst = "tt980970";
 		//URL moviePage = scraper.getAwardsPageById(movieConst);
-		scraper.getMe(movieConst);
-		int awards = scraper.getMe(movieConst);
+		//scraper.getMe(movieConst);
+		int awards = scraper.getNumAwardsForMovie(movieConst);
 		
 		System.out.println("This movie won " + awards + " awards");*/
 		
 		IMDbScraper scraper = new IMDbScraper();
-		scraper.readWriteCSV("sample.txt", "sampleOut.txt");
+		scraper.readWriteCSV("C:/Users/Mary/Documents/GitHub/Book-to-Movie/Data/MovieOutput/Filtered/exOutFilter.csv", "exOutFilterWithAwards.csv");
 	}
 	
 
