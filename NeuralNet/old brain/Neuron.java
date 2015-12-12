@@ -21,26 +21,23 @@ public class Neuron {
     private List<Neuron> axonTerminals; //Neurons the output goes to
     private double neuronOutput; //Output from the Neuron
     private double correctOutput; //Corrected output from backpropagation
-    private double learningRate;
     
   // Simple constructor method:
-    public Neuron(double learningRate) {
+    public Neuron() {
     	this.random = new Random();
         this.dendrites = new HashMap<>();
         this.neuronInputs = new HashMap<>();
         this.inputLayer = false;
         this.axonTerminals = new ArrayList<>();
-        this.learningRate = learningRate;
     }
     
     // Complicated constructor method, may not be useful:
-    public Neuron(List<Neuron> inputNeurons, List<Neuron> outputNeurons, double learningRate) {
+    public Neuron(List<Neuron> inputNeurons, List<Neuron> outputNeurons) {
     	this.random = new Random();
         this.dendrites = new HashMap<>();
         this.neuronInputs = new HashMap<>();
         this.inputLayer = false;
         this.axonTerminals = new ArrayList<>();
-        this.learningRate = learningRate;
         if(inputNeurons != null){
             for(Neuron neuron : inputNeurons){
                 dendrites.put(neuron, new Double(random.nextDouble()));
@@ -130,8 +127,7 @@ public class Neuron {
         Map<Neuron, Double> dendriteUpdates = errorUpdates(dendrites, neuronInputs);
         Map<Neuron, Double> inputUpdates = errorUpdates(neuronInputs, dendrites);
         for(Neuron neuron : dendrites.keySet()){
-            dendrites.put(neuron, dendrites.get(neuron) - 
-            		(this.learningRate * dendriteUpdates.get(neuron)));
+            dendrites.put(neuron, dendrites.get(neuron) - dendriteUpdates.get(neuron));
         }
         for(Neuron neuron : inputUpdates.keySet()){
             neuron.modifyCorrectOutput(inputUpdates.get(neuron));
