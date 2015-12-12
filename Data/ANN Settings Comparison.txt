@@ -1,0 +1,76 @@
+Settings:
+Learning Rate: 0.25
+Hidden Layers: 1
+Hidden Layer Size: 12
+Avg. Sq. Error Threshold: 0.0337
+
+Testing Avg. Sq. Error: 0.0332
+Rating Offset | Std. Dev: 1.038
+BoxOffice Offset | Std. Dev: 2.595
+ProdCost Offset | Std. Dev: 1.848
+Noms Offset | Std. Dev: 1.399
+
+
+Settings:
+Learning Rate: 0.1
+Hidden Layers: 1
+Hidden Layer Size: 10
+Avg. Sq. Error Threshold: 0.0337
+
+Testing Avg. Sq. Error: 0.0332
+Rating Offset | Std. Dev: 1.163
+BoxOffice Offset | Std. Dev: 2.644
+ProdCost Offset | Std. Dev: 1.609
+Noms Offset | Std. Dev: 1.441
+
+
+Settings:
+Learning Rate: 0.05
+Hidden Layers: 1
+Hidden Layer Size: 8
+Avg. Sq. Error Threshold: 0.0337
+
+Testing Avg. Sq. Error: 0.0335
+Rating Offset | Std. Dev: 1.126
+BoxOffice Offset | Std. Dev: 2.892
+ProdCost Offset | Std. Dev: 2.068
+Noms Offset | Std. Dev: 1.384
+
+
+Settings:
+Learning Rate: 0.25
+Hidden Layers: 2
+Hidden Layer Sizes: 10, 8
+Avg. Sq. Error Threshold: 0.0337
+
+Testing Avg. Sq. Error: 0.0330
+Rating Offset | Std. Dev: 0.962
+BoxOffice Offset | Std. Dev: 2.934
+ProdCost Offset | Std. Dev: 2.024
+Noms Offset | Std. Dev: 1.326
+
+
+Settings:
+Learning Rate: 0.25
+Hidden Layers: 2
+Hidden Layer Sizes: 8, 6
+Avg. Sq. Error Threshold: 0.0337
+
+Testing Avg. Sq. Error: 0.0330
+Rating Offset | Std. Dev: 1.196
+BoxOffice Offset |Std. Dev: 2.625
+ProdCost Offset | Std. Dev: 2.065
+Noms Offset | Std. Dev: 1.427
+
+
+Settings:
+Learning Rate: 0.8
+Hidden Layers: 2
+Hidden Layer Sizes: 6, 4
+Avg. Sq. Error Threshold: 0.0337
+
+Testing Avg. Sq. Error: 0.0349
+Rating Offset | Std. Dev: 1.221
+BoxOffice Offset | Std. Dev: 2.546
+ProdCost Offset | Std. Dev: 1.896
+Noms Offset | Std. Dev: 1.593

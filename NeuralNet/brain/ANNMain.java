@@ -1,3 +1,6 @@
+//Mary Moser
+//Isaac Vawter
+
 package main;
 
 import java.util.ArrayList;
@@ -6,31 +9,50 @@ import java.util.Map;
 import brain.NeuralNet;
 import brain.TrainingParser;
 
+//Main class for running our project's ANN:
 public class ANNMain {
 	
-	
+	//Main method:
 	public static void main(String[] args) {
+		
+		//Define input/output layer sizes and learning rate:
+		int inputLayerSize = 43;
+		int outputLayerSize = 44;
+		double learningRate = 0.05;
+		
+		//Parse hard-coded data files:
 		TrainingParser parser = new TrainingParser(
 				"C:\\Users\\Isaac\\Desktop\\BookDataFinal.csv",
 				"C:\\Users\\Isaac\\Desktop\\MovieDataFinal.csv",
-				43, 44);
+				inputLayerSize,
+				outputLayerSize);
 		
+		//Get inputs, outputs, training, and testing sets from parser:
 		Map<String, int[]> bookInputs = parser.getBookInputs();
 		Map<String, int[]> movieOutputs = parser.getMovieOutputs();
-		
 		ArrayList<String> trainingSet = parser.getTrainingBooks();
 		ArrayList<String> testingSet = parser.getTestingBooks();
 		
-		NeuralNet ann = new NeuralNet(43, 10, 44);
+		//Define sizes of each hidden layer:
+		ArrayList<Integer> hiddenLayerSizes = new ArrayList<>();
+		hiddenLayerSizes.add(8);
+		
+		//Initiallize ANN:
+		NeuralNet ann = new NeuralNet(	inputLayerSize, 
+										hiddenLayerSizes, 
+										outputLayerSize, 
+										learningRate);
 		ann.setInputMap(bookInputs);
 		ann.setOutputMap(movieOutputs);
 		ann.setTrainingSet(trainingSet);
 		ann.setTestingSet(testingSet);
 		
-		ann.train(0.025);
+		//Conduct supervised training:
+		ann.train(0.0337);
+		
+		//Test ANN and display standard deviations:
 		ann.test();
-		ann.printPredictionComp();
-
+		ann.printPredictionError();
 	}
 	
 	

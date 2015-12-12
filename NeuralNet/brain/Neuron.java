@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 
+//Neuron class representing a perceptron with backpropagation functionality.
 public class Neuron {
 
 	// Instance Variables:
@@ -21,7 +22,7 @@ public class Neuron {
     private List<Neuron> axonTerminals; //Neurons the output goes to
     private double neuronOutput; //Output from the Neuron
     private double correctOutput; //Corrected output from backpropagation
-    private double learningRate;
+    private double learningRate; //Learning Rate applied to weight adjustments
     
   // Simple constructor method:
     public Neuron(double learningRate) {
@@ -31,26 +32,6 @@ public class Neuron {
         this.inputLayer = false;
         this.axonTerminals = new ArrayList<>();
         this.learningRate = learningRate;
-    }
-    
-    // Complicated constructor method, may not be useful:
-    public Neuron(List<Neuron> inputNeurons, List<Neuron> outputNeurons, double learningRate) {
-    	this.random = new Random();
-        this.dendrites = new HashMap<>();
-        this.neuronInputs = new HashMap<>();
-        this.inputLayer = false;
-        this.axonTerminals = new ArrayList<>();
-        this.learningRate = learningRate;
-        if(inputNeurons != null){
-            for(Neuron neuron : inputNeurons){
-                dendrites.put(neuron, new Double(random.nextDouble()));
-            }
-        }
-        if(outputNeurons != null){
-            for(Neuron neuron : outputNeurons){
-                axonTerminals.add(neuron);
-            }
-        }
     }
     
     // Method representing an incoming action potential, i.e. receiving another
@@ -115,7 +96,6 @@ public class Neuron {
             double errorPoint2 = getError(pspTargetHalf, pspNonTargetHalf);
             
             double deltaValue = (errorPoint2 - errorPoint1) / 0.00000002;
-            // System.out.println(deltaValue);
             pspTargetHalf.put(neuron, baseValue);
             deltaValues.put(neuron, deltaValue);
         }
@@ -153,14 +133,17 @@ public class Neuron {
         }
     }
     
+    //Method that returns the neuron's most recent output:
     public double getNeuronOutput(){
         return neuronOutput;
     }
     
+    //Method to set correct output for output layer neurons during backpropagation calculation:
     public void setCorrectOutput(double correctOutput){
         this.correctOutput = correctOutput;
     }
     
+    //Method for modifying correct output due to error propagation during backpropagation:
     public void modifyCorrectOutput(double deltaOutput){
         this.correctOutput -= deltaOutput;
     }
