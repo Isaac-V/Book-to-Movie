@@ -2,22 +2,22 @@ Settings:
 Learning Rate: 0.25
 Hidden Layers: 1
 Hidden Layer Size: 12
-Avg. Sq. Error Threshold: 0.0337
+Avg. Sq. Error Threshold: 0.0674
 
-Testing Avg. Sq. Error: 0.0332
-Rating Offset | Std. Dev: 1.038
-BoxOffice Offset | Std. Dev: 2.595
-ProdCost Offset | Std. Dev: 1.848
-Noms Offset | Std. Dev: 1.399
+Testing Avg. Sq. Error: 0.0657
+Rating Offset | Std. Dev: 1.010
+BoxOffice Offset | Std. Dev: 2.324
+ProdCost Offset | Std. Dev: 1.915
+Noms Offset | Std. Dev: 1.251
 
 
 Settings:
 Learning Rate: 0.1
 Hidden Layers: 1
 Hidden Layer Size: 10
-Avg. Sq. Error Threshold: 0.0337
+Avg. Sq. Error Threshold: 0.0674
 
-Testing Avg. Sq. Error: 0.0332
+Testing Avg. Sq. Error: 0.0664
 Rating Offset | Std. Dev: 1.163
 BoxOffice Offset | Std. Dev: 2.644
 ProdCost Offset | Std. Dev: 1.609
@@ -28,9 +28,9 @@ Settings:
 Learning Rate: 0.05
 Hidden Layers: 1
 Hidden Layer Size: 8
-Avg. Sq. Error Threshold: 0.0337
+Avg. Sq. Error Threshold: 0.0674
 
-Testing Avg. Sq. Error: 0.0335
+Testing Avg. Sq. Error: 0.0670
 Rating Offset | Std. Dev: 1.126
 BoxOffice Offset | Std. Dev: 2.892
 ProdCost Offset | Std. Dev: 2.068
@@ -41,9 +41,9 @@ Settings:
 Learning Rate: 0.25
 Hidden Layers: 2
 Hidden Layer Sizes: 10, 8
-Avg. Sq. Error Threshold: 0.0337
+Avg. Sq. Error Threshold: 0.0674
 
-Testing Avg. Sq. Error: 0.0330
+Testing Avg. Sq. Error: 0.0660
 Rating Offset | Std. Dev: 0.962
 BoxOffice Offset | Std. Dev: 2.934
 ProdCost Offset | Std. Dev: 2.024
@@ -54,9 +54,9 @@ Settings:
 Learning Rate: 0.25
 Hidden Layers: 2
 Hidden Layer Sizes: 8, 6
-Avg. Sq. Error Threshold: 0.0337
+Avg. Sq. Error Threshold: 0.0674
 
-Testing Avg. Sq. Error: 0.0330
+Testing Avg. Sq. Error: 0.0660
 Rating Offset | Std. Dev: 1.196
 BoxOffice Offset |Std. Dev: 2.625
 ProdCost Offset | Std. Dev: 2.065
@@ -67,10 +67,17 @@ Settings:
 Learning Rate: 0.8
 Hidden Layers: 2
 Hidden Layer Sizes: 6, 4
-Avg. Sq. Error Threshold: 0.0337
+Avg. Sq. Error Threshold: 0.0674
 
-Testing Avg. Sq. Error: 0.0349
+Testing Avg. Sq. Error: 0.0698
 Rating Offset | Std. Dev: 1.221
 BoxOffice Offset | Std. Dev: 2.546
 ProdCost Offset | Std. Dev: 1.896
 Noms Offset | Std. Dev: 1.593
+
+
+Random Guessing:
+Rating Offset | 3.782
+BoxOffice Offset | 6.174
+BoxOffice Offset | 6.174
+Noms Offset | Std. Dev: 2.186

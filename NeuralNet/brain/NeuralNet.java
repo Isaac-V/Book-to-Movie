@@ -146,7 +146,7 @@ public class NeuralNet {
                 //backpropagation:
                 for(int k = 0; k < this.outputSize; k++){
                 	Neuron outputNeuron = this.outputLayer.get(k);
-                    errorSum += 0.5 * Math.pow(outputArray[k] - outputNeuron.getNeuronOutput(), 2);
+                    errorSum += Math.pow(outputArray[k] - outputNeuron.getNeuronOutput(), 2);
                     outputNeuron.setCorrectOutput(outputArray[k]);
                 }
                 
@@ -199,7 +199,7 @@ public class NeuralNet {
             //Calculate squared errors:
             for(int k = 0; k < this.outputSize; k++){
             	Neuron outputNeuron = this.outputLayer.get(k);
-                errorSum += 0.5 * Math.pow(outputArray[k] - outputNeuron.getNeuronOutput(), 2);
+                errorSum += Math.pow(outputArray[k] - outputNeuron.getNeuronOutput(), 2);
             }
             
             //Generate and store prediction:

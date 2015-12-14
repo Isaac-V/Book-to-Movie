@@ -18,7 +18,7 @@ public class ANNMain {
 		//Define input/output layer sizes and learning rate:
 		int inputLayerSize = 43;
 		int outputLayerSize = 44;
-		double learningRate = 0.05;
+		double learningRate = 0.25;
 		
 		//Parse hard-coded data files:
 		TrainingParser parser = new TrainingParser(
@@ -35,7 +35,7 @@ public class ANNMain {
 		
 		//Define sizes of each hidden layer:
 		ArrayList<Integer> hiddenLayerSizes = new ArrayList<>();
-		hiddenLayerSizes.add(8);
+		hiddenLayerSizes.add(12);
 		
 		//Initiallize ANN:
 		NeuralNet ann = new NeuralNet(	inputLayerSize, 
@@ -48,7 +48,7 @@ public class ANNMain {
 		ann.setTestingSet(testingSet);
 		
 		//Conduct supervised training:
-		ann.train(0.0337);
+		ann.train(0.0674);
 		
 		//Test ANN and display standard deviations:
 		ann.test();

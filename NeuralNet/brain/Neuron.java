@@ -73,7 +73,7 @@ public class Neuron {
     // Method that determines the value of the Squared Error Function based on the 
     // inputs and weights:
     private double getError(Map<Neuron, Double> weights, Map<Neuron, Double> inputs){
-        return 0.5 * Math.pow(correctOutput - determineOutput(weights, inputs), 2);
+        return Math.pow(correctOutput - determineOutput(weights, inputs), 2);
     }
     
     // Method that creates a Map of delta-values for either weights or inputs by taking an
