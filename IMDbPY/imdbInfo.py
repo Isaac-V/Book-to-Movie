@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+## CMPSCI 383 (Artificial Intelligence)
+## Mary Moser (29154085), Isaac Vawter (28277700)
+
 ##-------------##
 ##-- IMPORTS --##
 ##-------------##
@@ -10,7 +13,6 @@ import re # Regular Expression
 import csv, codecs, cStringIO # For working with CSV files
 from operator import itemgetter
 import string
-#from imdb.parser.http import movieParser
 
 ##-----------------##
 ##-- GLOBAL VARS --##
@@ -71,7 +73,9 @@ class IMDbMovie:
     
     ##-----------------------------
     
-    """ RETURN THIS MOVIE IN DICTIONARY FORM """
+    """
+        RETURN THIS MOVIE IN DICTIONARY FORM 
+    """
     def convertToDict(self, encode):
         # Declare dictionary to store keys
         movieDict = {}
@@ -466,57 +470,6 @@ def isExactMatch(movie, searchTerm):
     # No actual or alternative title matches exactly
     return False
     
-"""def isExactMatch(movie, searchTerm):
-    # Grab title
-    movieTitle = movie['title']
-    print "TITLE", movieTitle
-    
-    ## TODO: Better handle year
-    ## Suggestions: Check if it exists. Separate methods for each (year and non-year)?
-    # Grab year (if it exists)
-    if movie.get('year') != None:
-        movieYear = movie.get('year')
-        movieTitleWithYear = movieTitle + " (" + str(movieYear) + ")"
-    else:
-        print "No year available"
-        movieYear = ""
-        movieTitleWithYear = movieTitle
-    
-    print "YEAR:", movieYear
-    
-    if hasYearAtEnd(searchTerm):
-        titleToMatch = movieTitle + " (" + str(movieYear) + ")"
-    else:
-        titleToMatch = movieTitle
-    
-    # Check if matches name or name with year
-    #if titlesMatch(movieTitle, searchTerm) or titlesMatch(movieTitleWithYear, searchTerm):
-    if titlesMatch(titleToMatch, searchTerm):
-        print "Found match:", movie.summary()
-        return True
-    
-    # If doesn't match exactly, check alternative titles
-    if movie.get('akas') != None: # True is movie has alternative titles
-        # Get list of alternative titles
-        altTitleList = movie.get('akas') or []
-        
-        # Compare all alternate titles to search term
-        for alt in altTitleList:
-            # Create variations of title
-            altWithYear = alt + " (" + str(movieYear) + ")"
-            
-            print "ALT TITLE:", altWithYear
-            
-            # Check if matches title, or title + year
-            if titlesMatch(alt, searchTerm) or titlesMatch(altWithYear, searchTerm):
-                # This movie's alternative title matches the search term.
-                # Return this movie.
-                print "Alternate title! Actual name is", movieTitle
-                #break;
-                return True
-    
-    return False
-"""
 """
     Gets closest title match from search result, rather than returning empty string
 """
@@ -650,8 +603,6 @@ def getHighestRated(list):
             sleepOneFifth()
         
         rating = movie.get('rating') or '0'
-        #movieObj = IMDbMovie(ia.get_imdbID(movie), ia)
-        #rating = movieObj.getRating() or '0'
         
         # Convert to float for comparison
         rating = float(rating)
@@ -672,7 +623,7 @@ def getHighestRated(list):
 ##-------------------------------------##
 
 """
-    main for running program independently
+    Main for running program independently (Mainly for testing or fixing individual entries)
 """
 if __name__ == "__main__":
     
@@ -699,4 +650,62 @@ if __name__ == "__main__":
     stringInfo += dict['IMDb ID'] + ";" + str(dict['IMDb Rating']) + ";"
     stringInfo += str(dict['Gross Revenue']) + ";" + str(dict['Budget']) + ";" + str(dict['Net Profit'])
     print stringInfo
+
+##------------------------------------------------------------------
+
+##-----------------------------------##
+##-- UNUSED CODE (KEPT FOR SAFETY) --##
+##-----------------------------------##
+    
+"""def isExactMatch(movie, searchTerm):
+    # Grab title
+    movieTitle = movie['title']
+    print "TITLE", movieTitle
+    
+    ## TODO: Better handle year
+    ## Suggestions: Check if it exists. Separate methods for each (year and non-year)?
+    # Grab year (if it exists)
+    if movie.get('year') != None:
+        movieYear = movie.get('year')
+        movieTitleWithYear = movieTitle + " (" + str(movieYear) + ")"
+    else:
+        print "No year available"
+        movieYear = ""
+        movieTitleWithYear = movieTitle
+    
+    print "YEAR:", movieYear
+    
+    if hasYearAtEnd(searchTerm):
+        titleToMatch = movieTitle + " (" + str(movieYear) + ")"
+    else:
+        titleToMatch = movieTitle
+    
+    # Check if matches name or name with year
+    #if titlesMatch(movieTitle, searchTerm) or titlesMatch(movieTitleWithYear, searchTerm):
+    if titlesMatch(titleToMatch, searchTerm):
+        print "Found match:", movie.summary()
+        return True
+    
+    # If doesn't match exactly, check alternative titles
+    if movie.get('akas') != None: # True is movie has alternative titles
+        # Get list of alternative titles
+        altTitleList = movie.get('akas') or []
+        
+        # Compare all alternate titles to search term
+        for alt in altTitleList:
+            # Create variations of title
+            altWithYear = alt + " (" + str(movieYear) + ")"
+            
+            print "ALT TITLE:", altWithYear
+            
+            # Check if matches title, or title + year
+            if titlesMatch(alt, searchTerm) or titlesMatch(altWithYear, searchTerm):
+                # This movie's alternative title matches the search term.
+                # Return this movie.
+                print "Alternate title! Actual name is", movieTitle
+                #break;
+                return True
+    
+    return False
+"""
     

@@ -1,3 +1,10 @@
+## CMPSCI 383 (Artificial Intelligence)
+## Mary Moser (29154085), Isaac Vawter (28277700)
+
+##-------------##
+##-- IMPORTS --##
+##-------------##
+
 import csv, codecs, cStringIO
 from imdbInfo import IMDbMovie
 import imdbInfo
@@ -7,9 +14,9 @@ import sys
 from operator import itemgetter
 import time
 
-##-----------##
-##  GLOBALS  ##
-##-----------##
+##---------------##
+##--  GLOBALS  --##
+##---------------##
 
 """ FIELDS_TO_KEEP specifies table headers from original file that will be preserved in output file.
     All other headers in file will be ignored.
@@ -35,9 +42,9 @@ INCOMPLETE = []
 
 ##----------------------------------------------------------------------
 
-##-------------##
-##  FUNCTIONS  ##
-##-------------##
+##--------------##
+##  CONNECTING  ##
+##--------------##
 
 """
     Establish a connection to IMDb
@@ -107,6 +114,9 @@ def descendSortByKey(dictList, key):
 ## READ/WRITE ##
 ##------------##    
 
+"""
+    Reads in a CSV of movie data. Writes only entries with complete data to the output file.
+"""
 def filterIncomplete(inFile, outFile):
     with open(inFile, 'rb') as inputFile, open(outFile, 'wb') as resultFile:
         # Read input file, delimiting by semicolns
@@ -201,6 +211,9 @@ def readBTMIndex_writeOutput(inFile, outFile, incompleteFile):
     
     saveUnresolvedToFile(incompleteFile)
 
+"""
+    Writes the list of problematic entries to a separate file for reference. Helpful for proofreading.
+"""
 def saveUnresolvedToFile(fileName):
     # Alert user of all unresolved rows
     if len(INCOMPLETE) > 0:
@@ -302,7 +315,9 @@ def buildNewRow(row, newRow):
     
 
 
-""" Takes CSV files exported from IMDb list and modifies to only include desired columns.
+"""
+    UNUSED: ORIGINAL APPROACH TO DATA GATHERING
+    Takes CSV files exported from IMDb list and modifies to only include desired columns.
     Removes unwanted columns (anything not in FIELDS_TO_KEEP). Adds and populates new
     columns as specified in FIELDS_TO_ADD.
 """
@@ -359,6 +374,10 @@ def updateBoxOffice(row):
     row.update(boxOffice)
     return True
 
+##---------------------##
+##-- VALIDATING DATA --##
+##---------------------##
+
 """
     Check if row contains values for all specified keys, and if all key-values are non-empty.
     Return false if data is unavailable or incomplete. Return true if all key-value pairs are filled.
@@ -388,12 +407,7 @@ def isMoreComplete(dict1, dict2, fields):
     #print "Count for 1:", dict1Count
     #print "Count for 2:", dict2Count
     return dict1Count > dict2Count
-    
-### --------------------------------------------------------------
 
-### TODO: Create Binary Output file.
-
-### --------------------------------------------------------------
 
 ###---------------------------------------------------------------
 ### UNUSED CODE (KEPT FOR SAFETY)
@@ -432,8 +446,10 @@ def isMoreComplete(dict1, dict2, fields):
     resultFile.close()
 """
 
+"""
+    Main method for testing/running program
+"""
 if __name__ == "__main__":
-    filterIncomplete("../Data/MovieOutput/exampleOutput2Stripped.csv", "exOutFilter.csv")
     #readBTMIndex_writeOutput("../Data/BookToMovieIndexProofread.csv", "exampleOutput2B.csv", "incomplete2B.csv")
-    #readWatchlist_writeCSVasDict()
-    # Testing some code
+    filterIncomplete("../Data/MovieOutput/exampleOutput2Stripped.csv", "exOutFilter.csv")
+    

@@ -1,3 +1,6 @@
+// CMPSCI 383 (Artificial Intelligence)
+//  Mary Moser (29154085), Isaac Vawter (28277700)
+
 package webScrapers;
 
 import java.io.BufferedReader;
@@ -16,9 +19,14 @@ import java.util.Arrays;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-//import com.csvreader.CsvReader;
-//import com.csvreader.CsvWriter;
 
+/**
+	CLASS: IMDbScraper
+	Based on BasicScraper. Used to scrape and parse data from web pages on IMDb.com.
+	Specifically, for our application, this class is used to find and parse the award
+	count on a given film's award page. It also includes methods for reading the original
+	data files created by the IMDbPY code, and adds an additional "Awards" column.
+**/
 public class IMDbScraper extends BasicScraper {
 	
 	// Fields
@@ -34,28 +42,31 @@ public class IMDbScraper extends BasicScraper {
 		System.out.println("Created IMDB scraper\n");
 	}
 	
-	/* Public Methods */
+	///////////////////////////////////////////////////////////////////
 	
+	/** GET AWARD COUNT FOR PARTICULAR MOVIE **/
 	
+	// Given a movie's ID constant ("tt" + IMDb ID), web scrape the appropriate web page,
+	// parse the HTML element containing the award count, and return the total count as an
+	// integer. If the HTML element is not found, or the element lists no awards, return 0
 	public int getNumAwardsForMovie(String idConst) {
-	
+		// Ensure idConst is in its valid form
+		// (NOTE: Was only really needed for one poor entry in input file)
 		if(!isValidId(idConst)) {
 			System.out.println("CAUTION: " + idConst + " is not a valid id! Better fix that...");
 			idConst = fixId(idConst);
 			System.out.println("Id is now " + idConst);
 		}
 		
+		// Get the appropriate URL for this film's award page
 		String movieAwardUrl = buildStringUrl(idConst);
 		
+		// Get and parse the award page.
+		// Store the URL to currentPage, and the parsed lines to currentPageLines
 		setAwardsPageData(movieAwardUrl);
-		//sleepMe(1);
 		
-		/*System.out.println("currentPage: " + currentPage);
-		
-		for(int i = 0; i < currentPageLines.size(); i++) {
-			System.out.println("Current line " + i + ":\n" + currentPageLines.get(i));
-		}*/
-		
+		// Search the lines for the award count listing, and return total
+		// number of nominations. Returns 0 if listing not found or contains no award record.
 		return getNumAwardsAtPage(this.currentPage);
 		
 	}
@@ -86,13 +97,6 @@ public class IMDbScraper extends BasicScraper {
 		return IMDB_URL_BASE + TITLE_URL + idConst + "/" + AWARDS_QUERY;
 	}
 	
-	// Grabs award page by full movie's title URL, as given by CSV file
-	/*public URL getAwardsPageByTitleURL(String movieTitleUrl) {
-		return this.getPage(movieTitleUrl + AWARDS_QUERY);
-	}*/
-	
-	
-	
 	// Find the number of awards listed on given page
 	private int getNumAwardsAtPage(URL awardPage) {
 	
@@ -111,10 +115,49 @@ public class IMDbScraper extends BasicScraper {
 		}
 	}
 	
+	///////////////////////////////////////////////////////////////////
 	
+	/** VALIDATING ID CONSTANTS **/
 	
-	/* Private Helpers */
+	// Return true if String has correct number of characters for an ID constant.
+	// Return false otherwise. Mostly used for low-level testing to ensure no leading
+	// zeros have accidentally been omitted or added.
+	private boolean isValidId(String idConst) {
+		if(idConst.length() != 9) {
+			return false;
+		}
+		return true;
+	}
 	
+	// Given an incomplete ID constant with missing leading zeros,
+	// returns a corrected version with the correct number of leading zeros.
+	// (Numerical ID must be 7 digits long; entire String with "tt" at front must be 9 chars long)
+	private String fixId(String idConst) {
+		String pattern = "(\\d+)";
+		Pattern rePattern = Pattern.compile(pattern);
+		Matcher match = rePattern.matcher(idConst);
+		
+		if(match.find()) {
+			String numbers = match.group(0);
+			int numPaddingZeros = 7 - numbers.length();
+			String newString = "tt";
+			for(int i = 0; i < numPaddingZeros; i++) {
+				newString += "0";
+			}
+			newString += numbers;
+			return newString;
+		} else {
+			return "";
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////
+	
+	/** HELPERS FOR WEB SCRAPING **/
+	
+	// Puts thread to sleep for specified number of seconds.
+	// Used to regulate the number of requests per interval of time,
+	// so as not to exceed IMDb's limit of 5 web service requests per second.
 	private void sleepMe(int seconds){
 		try{
 			Thread.sleep(seconds * 1000);
@@ -163,7 +206,7 @@ public class IMDbScraper extends BasicScraper {
 		return awardCount;
 	}
 	
-	// From award page, grabs as a string the html element <div class="desc">...</div>
+	// From award page, grabs as a string the HTML element <div class="desc">...</div>
 	// This div, if it exists, contains information on the total number of wins and
 	// nominations this movie has received. If the div is not found, return an empty string
 	private String getAwardsDescDiv(URL awardPage) {
@@ -201,6 +244,8 @@ public class IMDbScraper extends BasicScraper {
 		}
 	}
 	
+	// Searches page lines of current web page for a given String.
+	// Returns a list of all lines containing that String.
 	private ArrayList<String> grabSourceLinesWithString(String s){
 	
 		System.out.println("In grabSourceLinesWithString method!!!!!!");
@@ -209,7 +254,6 @@ public class IMDbScraper extends BasicScraper {
 		
 		if(this.currentPageLines != null){
 			for(int i = 0; i < this.currentPageLines.size(); i++){
-				//System.out.println("Source line " + i + ":\n" + currentPageLines.get(i));
 				String currS = this.currentPageLines.get(i);
 				if(currS.contains(s)){
 					lines.add(currS);
@@ -220,11 +264,9 @@ public class IMDbScraper extends BasicScraper {
 		return lines;
 	}
 	
-	
-	
 	///////////////////////////////////////////////////////////////////
 	
-	/* Writing results */
+	/** READING AND WRITING CSV FILES **/
 	
 	public void readWriteCSV(String inputCsv, String outputCsv) {
 		System.out.println("Writing to file...");
@@ -283,32 +325,7 @@ public class IMDbScraper extends BasicScraper {
 		
 	}
 	
-	private boolean isValidId(String idConst) {
-		if(idConst.length() != 9) {
-			return false;
-		}
-		return true;
-	}
-	
-	private String fixId(String idConst) {
-		String pattern = "(\\d+)";
-		Pattern rePattern = Pattern.compile(pattern);
-		Matcher match = rePattern.matcher(idConst);
-		
-		if(match.find()) {
-			String numbers = match.group(0);
-			int numPaddingZeros = 7 - numbers.length();
-			String newString = "tt";
-			for(int i = 0; i < numPaddingZeros; i++) {
-				newString += "0";
-			}
-			newString += numbers;
-			return newString;
-		} else {
-			return "";
-		}
-	}
-	
+	// Given an String array, returns the first index containing the specified element
 	public int indexOf(String[] array, String element) {
 		for(int i = 0; i < array.length; i++) {
 			if(array[i].equals(element)) {
@@ -318,70 +335,16 @@ public class IMDbScraper extends BasicScraper {
 		return -1;
 	}
 	
-
+	///////////////////////////////////////////////////////////////////
+	
+	/** RUNNING PROGRAM **/
+	
 	public static void main(String[] args) {
 	
-		// TODO: Write to loop through csv file, preferably with movieID added
-		/*IMDbScraper scraper = new IMDbScraper();
-		String movieConst = "tt980970";
-		//URL moviePage = scraper.getAwardsPageById(movieConst);
-		//scraper.getMe(movieConst);
-		int awards = scraper.getNumAwardsForMovie(movieConst);
-		
-		System.out.println("This movie won " + awards + " awards");*/
-		
+		// Run the file
 		IMDbScraper scraper = new IMDbScraper();
 		scraper.readWriteCSV("C:/Users/Mary/Documents/GitHub/Book-to-Movie/Data/MovieOutput/Filtered/exOutFilter.csv", "exOutFilterWithAwards.csv");
 	}
 	
 
 } // end class IMDbScraper
-
-/*
-class IMDbCSVReader {
-
-	private String fileName;
-	private char delimiter;
-	
-	public IMDbCSVReader(String fileName, char delimiter) {
-		this.fileName = fileName;
-		this.delimiter = delimiter;
-	}
-	
-	public ReadFromFile() {
-		try {
-			
-			CsvReader csvMovies = new CsvReader(this.fileName, this.delimiter);
-		
-			csvMovies.readHeaders();
-
-			while (csvMovies.readRecord()) {
-				String movieTitle = csvMovies.get("Movie");
-				String movieIDConst = csvMovies.get("IMDb ID");
-				
-				// perform program logic here
-				System.out.println("Pulling info for " + movieTitle + ":" + movieIDConst);
-			}
-	
-			csvMovies.close();
-			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-	}
-
-	
-
-} // class IMDbCSVReader
-
-class IMDbCSVWriter {
-	
-	public IMDbCSVWriter() {
-	
-	}
-
-
-} // class IMDbCSVWriter*/
