@@ -1,3 +1,6 @@
+// CMPSCI 383 (Artificial Intelligence)
+// Mary Moser (29154085), Isaac Vawter (28277700)
+
 package webScrapers;
 
 import java.net.URL;

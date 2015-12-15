@@ -1,11 +1,10 @@
-//Mary Moser
-//Isaac Vawter
+// CMPSCI 383 (Artificial Intelligence)
+// Mary Moser (29154085), Isaac Vawter (28277700)
 
 package main;
 
 import java.util.ArrayList;
 import java.util.Map;
-
 import brain.NeuralNet;
 import brain.TrainingParser;
 
